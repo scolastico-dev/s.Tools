@@ -16,7 +16,7 @@ public class Triple<X, Y, Z> {
    * Construct a new pair with two data types.
    * @param x Value for data type one.
    * @param y Value for data type two.
-   * @param y Value for data type three.
+   * @param z Value for data type three.
    */
   public Triple(X x, Y y, Z z) {
     this.x = x;
