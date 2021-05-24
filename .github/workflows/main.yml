@@ -1,0 +1,46 @@
+name: Build, Test and Package
+
+on:
+  push:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build, Test and Package
+    runs-on: Ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 12
+        uses: actions/setup-java@v1
+        with:
+          java-version: 12
+          server-id: github
+          settings-path: ${{ github.workspace }}
+      - uses: pozetroninc/github-action-get-latest-release@master
+        id: version
+        name: Get latest version name from GitHub
+        with:
+          repository: scolastico/s.Tools
+          excludes: draft
+      - name: Set version in pom.xml
+        uses: datamonsters/replace-action@v2
+        with:
+          files: pom.xml
+          replacements: dev-snapshot=${{ steps.version.outputs.release }}
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Generate Java Doc
+        if: github.event_name == 'release'
+        run: mvn -B javadoc:javadoc --file pom.xml
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/site/apidocs
+      - name: Release Maven package
+        if: github.event_name == 'release'
+        uses: samuelmeuli/action-maven-publish@v1.4.0
+        with:
+          nexus_username: ${{ secrets.USERNAME }}
+          nexus_password: ${{ secrets.PASSWORD }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
