@@ -44,3 +44,4 @@ jobs:
           nexus_username: ${{ secrets.USERNAME }}
           nexus_password: ${{ secrets.PASSWORD }}
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
