@@ -1,9 +1,9 @@
 # s.Tools
-[![GitHub](https://img.shields.io/github/license/scolastico/s.Tools)](#)
-[![GitHub](https://img.shields.io/github/languages/code-size/scolastico/s.Tools)](#)
-[![GitHub](https://img.shields.io/github/issues/scolastico/s.Tools)](#)
-[![GitHub](https://img.shields.io/github/v/tag/scolastico/ss.Tools?label=version)](#)
-[![GitHub](https://github.com/scolastico/s.Tools/actions/workflows/main.yml/badge.svg)](#)
+[![badge](https://img.shields.io/github/license/scolastico/s.Tools)](https://github.com/scolastico/s.Tools/blob/main/LICENSE)
+[![badge](https://img.shields.io/github/languages/code-size/scolastico/s.Tools)](#)
+[![badge](https://img.shields.io/github/issues/scolastico/s.Tools)](https://github.com/scolastico/s.Tools/issues)
+[![badge](https://img.shields.io/github/v/tag/scolastico/s.Tools?label=version)](https://github.com/scolastico/s.Tools/releases)
+[![badge](https://github.com/scolastico/s.Tools/actions/workflows/main.yml/badge.svg)](https://github.com/scolastico/s.Tools/actions)
 
 Simple tools for simple usage!
 
@@ -24,6 +24,9 @@ s.Tools is in the maven central repository so to install it just add the followi
 ```
 ### Other:
 Instructions for installing with a different build manager can be found [here](https://search.maven.org/artifact/me.scolastico/tools/1.0.0/jar).
+
+## Documentation
+You can find the latest api docs from the main branch [here](https://scolastico.github.io/s.Tools/).
 
 ## License
 This project is licensed under the **Mozilla Public License Version 2.0**. Read more [here](https://www.mozilla.org/en-US/MPL/2.0/).
