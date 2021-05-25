@@ -31,7 +31,7 @@ public class ConfigHandler<Config> {
    *             In normal cases should be an ".json" file.
    * @throws IOException If file is not read- or writeable an IOException is thrown.
    */
-  ConfigHandler(Config defaultConfig, String path) throws IOException {
+  public ConfigHandler(Config defaultConfig, String path) throws IOException {
     this.defaultConfig = defaultConfig;
     this.path = path;
     this.file = new File(path);
@@ -53,7 +53,7 @@ public class ConfigHandler<Config> {
    *                                        If this is enabled the config will also be updated every time the handler is created.
    * @throws IOException If file is not read- or writeable an IOException is thrown.
    */
-  ConfigHandler(Config defaultConfig, String path, Boolean writeDefaultConfigAutomatically) throws IOException {
+  public ConfigHandler(Config defaultConfig, String path, Boolean writeDefaultConfigAutomatically) throws IOException {
     this.defaultConfig = defaultConfig;
     this.path = path;
     this.file = new File(path);
