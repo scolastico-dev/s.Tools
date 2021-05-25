@@ -29,9 +29,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/scolastico/s.MysqlManager.git</connection>
-    <developerConnection>scm:git:git://github.com/scolastico/s.MysqlManager.git</developerConnection>
-    <url>https://github.com/scolastico/s.MysqlManager</url>
+    <connection>scm:git:git://github.com/scolastico/s.Tools.git</connection>
+    <developerConnection>scm:git:git://github.com/scolastico/s.Tools.git</developerConnection>
+    <url>https://github.com/scolasticos.Tools</url>
     <tag>HEAD</tag>
   </scm>
 
