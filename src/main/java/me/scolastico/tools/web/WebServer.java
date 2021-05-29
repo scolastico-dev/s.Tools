@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import me.scolastico.tools.dataholder.SchedulerConfiguration;
 import me.scolastico.tools.handler.SchedulerHandler;
+import me.scolastico.tools.simplified.SimplifiedResourceFileReader;
 import me.scolastico.tools.simplified.URLCoder;
 import me.scolastico.tools.web.dataholder.WebServerRegistrationData;
 import me.scolastico.tools.web.annoations.WebServerRegistration;
@@ -29,6 +31,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.reflections.Reflections;
 
@@ -41,6 +44,11 @@ public class WebServer implements HttpHandler {
   private static ArrayList<WebServerRegistrationData> registrations = null;
   private static HashMap<SpecialWebsite, WebServerRegistrationData> specialRegistrations = null;
   private static HashMap<String, Integer> usageWeights = new HashMap<>();
+  private static boolean checkOverrideFolderFirst = false;
+  private static boolean checkResourcesAfter = false;
+  private static String resourceFolderPath = "/webserver";
+  private static String overrideFolderPath = "./web";
+  private static boolean checkForIndexHtml = true;
   private static int maxUsageWeight = 60000;
   private static int weightLessPerSecond = 100;
   private static long schedulerId = 0L;
@@ -59,6 +67,64 @@ public class WebServer implements HttpHandler {
     }
   });
 
+  /**
+   * Should if an file override or an resource is found
+   * with the name index.html it also replace the "/" url?
+   * @param checkForIndexHtml Boolean if it should check for an index file.
+   */
+  public static void setCheckForIndexHtml(boolean checkForIndexHtml) {
+    WebServer.checkForIndexHtml = checkForIndexHtml;
+  }
+
+  /**
+   * Should the override folder checked first if an file is existing?
+   * The http request method will be ignored in this case!
+   * If set to true the webserver will check before checking if an
+   * website interface will be executed! If something is found the
+   * interface will not be called and after sending the content of
+   * the file the webserver closes the connection!
+   * @param checkOverrideFolderFirst Boolean if the webserver should check before handling the request if an override file is existing.
+   */
+  public static void setCheckOverrideFolderFirst(boolean checkOverrideFolderFirst) {
+    WebServer.checkOverrideFolderFirst = checkOverrideFolderFirst;
+  }
+
+  /**
+   * Should the resource folder be checked first if an file is existing?
+   * The http request method will NOT be ignored in this case! Only GET will not return in 404!
+   * If set to true the webserver will check after checking if an website
+   * interface can be executed! If something is found the the webserver
+   * will not return a 404 error and will send instead the content of
+   * the resource.
+   * @param checkResourcesAfter Boolean if the webserver should check after handling the request if an default file exists.
+   */
+  public static void setCheckResourcesAfter(boolean checkResourcesAfter) {
+    WebServer.checkResourcesAfter = checkResourcesAfter;
+  }
+
+  /**
+   * The path to the folder in the resources which should be checked
+   * after an request was handled by the interfaces.
+   * @param resourceFolderPath The path to the folder. Default is "/webserver".
+   */
+  public static void setResourceFolderPath(String resourceFolderPath) {
+    WebServer.resourceFolderPath = resourceFolderPath;
+  }
+
+  /**
+   * The path to the override folder which should be checked
+   * before an request will be handled by the interfaces.
+   * @param overrideFolderPath The path to the folder. Default is "./web".
+   */
+  public static void setOverrideFolderPath(String overrideFolderPath) {
+    WebServer.overrideFolderPath = overrideFolderPath;
+  }
+
+  /**
+   * Get the usage weight of an user.
+   * @param ip The ip of the user.
+   * @return The current weight of the user.
+   */
   public static int getUsageWeight(String ip) {
     return usageWeights.getOrDefault(ip, 0);
   }
@@ -226,6 +292,17 @@ public class WebServer implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
+    String path = exchange.getRequestURI().getPath();
+    String pathWithIndexReplacementIfNeeded = path.endsWith("/") ? path + "index.html" : path;
+    if (checkOverrideFolderFirst) {
+      File file = new File("./" + overrideFolderPath + pathWithIndexReplacementIfNeeded);
+      if (file.exists() && file.isFile()) {
+        byte[] bytes = FileUtils.readFileToByteArray(file);
+        exchange.sendResponseHeaders(200, bytes.length);
+        IOUtils.write(bytes, exchange.getResponseBody());
+        return;
+      }
+    }
     Pair<Integer, String> ret = null;
     boolean methodError = false;
     String[] PATH_VALUES = null;
@@ -234,7 +311,6 @@ public class WebServer implements HttpHandler {
     List<FileItem> FILES = null;
     HashMap<String, String> GET_VALUES = null;
     Object JSON_OBJECT = null;
-    String path = exchange.getRequestURI().getPath();
     boolean limitReached = false;
     int userWeight = getUsageWeight(exchange.getRemoteAddress().toString());
     outerLoop:
@@ -387,11 +463,18 @@ public class WebServer implements HttpHandler {
           if (ret.getX() != 0) {
             exchange.sendResponseHeaders(ret.getX(), ret.getY().length());
             IOUtils.write(ret.getY(), exchange.getResponseBody(), StandardCharsets.UTF_8);
-          } else {
-            exchange.close();
-            return;
           }
         } else {
+          if (checkResourcesAfter) {
+            try {
+              byte[] bytes = SimplifiedResourceFileReader.getInstance().getByteArrayFromResources(resourceFolderPath + pathWithIndexReplacementIfNeeded);
+              if (bytes != null && bytes.length != 0) {
+                exchange.sendResponseHeaders(200, bytes.length);
+                IOUtils.write(bytes, exchange.getResponseBody());
+                return;
+              }
+            } catch (Exception ignored) {}
+          }
           sendSpecialPage(exchange, SpecialWebsite.NOT_FOUND_PAGE, 404, "not found");
         }
       }
