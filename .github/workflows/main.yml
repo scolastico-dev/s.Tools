@@ -34,6 +34,7 @@ jobs:
         if: github.event_name == 'release'
         run: mvn -B javadoc:javadoc --file pom.xml
       - uses: peaceiris/actions-gh-pages@v3
+        if: github.event_name == 'release'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: target/site/apidocs
