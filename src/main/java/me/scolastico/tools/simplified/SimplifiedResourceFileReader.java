@@ -5,10 +5,17 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Simple functions to read a byte array or a string out of a file in the resources.
+ */
 public class SimplifiedResourceFileReader {
 
   private static SimplifiedResourceFileReader instance = null;
 
+  /**
+   * Get the instance. This class is a singleton.
+   * @return The instance.
+   */
   public static SimplifiedResourceFileReader getInstance() {
     if (instance == null) {
       instance = new SimplifiedResourceFileReader();
