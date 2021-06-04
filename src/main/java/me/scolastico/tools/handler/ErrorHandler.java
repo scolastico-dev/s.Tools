@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Handle your errors automatically.
@@ -52,19 +53,21 @@ public class ErrorHandler implements UncaughtExceptionHandler {
     try {
       errorLog = new File("error.log");
       if (errorLog.exists()) {
-        int counter = 2;
-        File destination = new File("error." + counter + ".log");
-        while (destination.exists()) {
-          counter++;
-          destination = new File("error." + counter + ".log");
+        if (FileUtils.readFileToString(errorLog, StandardCharsets.UTF_8).split("\r\n|\r|\n").length != 2) {
+          int counter = 2;
+          File destination = new File("error." + counter + ".log");
+          while (destination.exists()) {
+            counter++;
+            destination = new File("error." + counter + ".log");
+          }
+          FileUtils.copyFile(errorLog, destination);
         }
-        FileUtils.copyFile(errorLog, destination);
-        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000, StandardCharsets.UTF_8);
+        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000 + "\n", StandardCharsets.UTF_8, false);
       } else if (!errorLog.createNewFile()) {
         errorLog = null;
         throw new Exception("Cant create error.log file!");
       } else {
-        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000, StandardCharsets.UTF_8);
+        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000 + "\n", StandardCharsets.UTF_8, false);
       }
     } catch (Exception e) {
       handle(e);
@@ -106,7 +109,7 @@ public class ErrorHandler implements UncaughtExceptionHandler {
       try {
         FileUtils.writeStringToFile(
             errorLog,
-            "Message: " + e.getMessage() + "\nStack Trace:\n" + exceptionAsString,
+            "Time (UNIX): " + System.currentTimeMillis()/1000 + "\nMessage: " + e.getMessage() + "\nStack Trace:\n" + exceptionAsString+"\n\n",
             StandardCharsets.UTF_8,
             true
         );
