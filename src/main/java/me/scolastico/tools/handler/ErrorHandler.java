@@ -51,9 +51,20 @@ public class ErrorHandler implements UncaughtExceptionHandler {
   public static void enableErrorLogFile() {
     try {
       errorLog = new File("error.log");
-      if (errorLog.exists() || errorLog.createNewFile()) {
+      if (errorLog.exists()) {
+        int counter = 2;
+        File destination = new File("error." + counter + ".log");
+        while (destination.exists()) {
+          counter++;
+          destination = new File("error." + counter + ".log");
+        }
+        FileUtils.copyFile(errorLog, destination);
+        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000, StandardCharsets.UTF_8);
+      } else if (!errorLog.createNewFile()) {
         errorLog = null;
         throw new Exception("Cant create error.log file!");
+      } else {
+        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000, StandardCharsets.UTF_8);
       }
     } catch (Exception e) {
       handle(e);
