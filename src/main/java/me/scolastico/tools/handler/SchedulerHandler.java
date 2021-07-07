@@ -1,21 +1,25 @@
 package me.scolastico.tools.handler;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
 import me.scolastico.tools.dataholder.SchedulerConfiguration;
 
 /**
  * SchedulerHandler for easy scheduling of tasks!
  */
-public class SchedulerHandler {
+public class SchedulerHandler extends TimerTask {
 
   private static long counter = 0;
   private static final HashMap<Long, SchedulerConfiguration> configurations = new HashMap<>();
+  private static final Timer timer = new Timer();
 
   /**
-   * Enable the SchedulerHandler.
+   * Enable the SchedulerHandler. Please be careful to not enable twice.
    */
-  private static void enable() {
-
+  public static void enable() {
+    timer.scheduleAtFixedRate(new SchedulerHandler(), 50, 50);
   }
 
   /**
@@ -36,5 +40,14 @@ public class SchedulerHandler {
   public static void removeConfiguration(long id) {
     configurations.remove(id);
   }
+
+  @Override
+  public void run() {
+    for (SchedulerConfiguration configuration:configurations.values()) {
+      configuration.executeTick();
+    }
+  }
+
+  private SchedulerHandler() {}
 
 }
