@@ -3,7 +3,6 @@ package me.scolastico.tools.handler;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ScheduledExecutorService;
 import me.scolastico.tools.dataholder.SchedulerConfiguration;
 
 /**

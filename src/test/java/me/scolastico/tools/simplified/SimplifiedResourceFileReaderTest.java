@@ -27,4 +27,11 @@ class SimplifiedResourceFileReaderTest {
     Assertions.assertNull(resourceFileReader.getStringFromResources("/notExisting.404"));
   }
 
+  @Test
+  void getAllResourcesInFolder() {
+    String[] result = resourceFileReader.getAllResourcesInFolder("folder1");
+    Assertions.assertEquals(1, result.length);
+    Assertions.assertEquals("folder1/folder2/file2.txt", result[0]);
+  }
+
 }
