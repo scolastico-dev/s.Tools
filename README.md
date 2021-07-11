@@ -18,12 +18,12 @@ s.Tools is in the maven central repository so to install it just add the followi
     <dependency>
       <groupId>me.scolastico</groupId>
       <artifactId>tools</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5</version>
     </dependency>
   </dependencies>
 ```
 ### Other:
-Instructions for installing with a different build manager can be found [here](https://search.maven.org/artifact/me.scolastico/tools/1.1.4/jar).
+Instructions for installing with a different build manager can be found [here](https://search.maven.org/artifact/me.scolastico/tools/1.1.5/jar).
 
 ## Documentation
 You can find the latest api docs from the main branch [here](https://scolastico.github.io/s.Tools/).
