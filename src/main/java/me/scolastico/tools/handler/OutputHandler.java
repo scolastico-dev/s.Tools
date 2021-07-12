@@ -9,7 +9,9 @@ import me.scolastico.tools.dataholder.SchedulerConfiguration;
 /**
  * The output handler is to handle System.out.print in the
  * way so you can save all outputs to a string and read it!
+ * @deprecated Moved this function to the new ConsoleManager.
  */
+@Deprecated
 public class OutputHandler {
 
   private static ByteArrayOutputStream out = null;

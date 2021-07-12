@@ -32,6 +32,8 @@ public class SimplifiedResourceFileReader {
    * Get the content of a file from the resources.
    * @param path The path to the file.
    * @return The content of the file.
+   * @throws IOException If read process is not successful an IOException is triggered.
+   * @throws NullPointerException If not found an NullPointerException is triggered.
    */
   public byte[] getByteArrayFromResources(final String path) throws IOException, NullPointerException {
     return getResourceAsStream(path).readAllBytes();

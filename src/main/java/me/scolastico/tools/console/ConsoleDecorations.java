@@ -2,7 +2,9 @@ package me.scolastico.tools.console;
 
 /**
  * Console decorations. Can simply added to System.out.print messages.
+ * @deprecated Use jansi in future. https://github.com/fusesource/jansi
  */
+@Deprecated
 public class ConsoleDecorations {
 
   public static final String RESET                      = "\u001b[0m";
@@ -11,6 +13,7 @@ public class ConsoleDecorations {
   public static final String INVERTED_COLOR             = "\u001b[7m";
   public static final String BACKSPACE                  = Character.toString((char) 8);
 
+  @Deprecated
   public static class Text {
 
     public static final String RED                      = "\u001b[31;1m";
@@ -36,6 +39,7 @@ public class ConsoleDecorations {
   /**
    * Set the background color of the console.
    */
+  @Deprecated
   public static class Background {
 
     public static final String RED                      = "\u001b[41;1m";
@@ -57,6 +61,7 @@ public class ConsoleDecorations {
 
   }
 
+  @Deprecated
   public static class CursorNavigation {
 
     public static final String LEFT                     = "\033[D";
