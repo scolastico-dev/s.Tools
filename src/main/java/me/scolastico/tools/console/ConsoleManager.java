@@ -104,7 +104,7 @@ public class ConsoleManager {
 
       enabled = true;
 
-      AnsiConsole.systemInstall();
+      if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
       defaultStream = System.out;
       PipedOutputStream out = new PipedOutputStream();
       in = new PipedInputStream(out, 2048);
@@ -149,7 +149,12 @@ public class ConsoleManager {
                 defaultStream.println();
                 defaultStream.print(prefix);
                 if (commands.containsKey(commandName)) {
-                  new CommandLine(commands.get(commandName).getClass()).execute(args.toArray(new String[0]));
+                  int result;
+                  if (args.size() > 0) {
+                    result = new CommandLine(commands.get(commandName).getClass()).execute(args.toArray(new String[0]));
+                  } else {
+                    result = new CommandLine(commands.get(commandName).getClass()).execute();
+                  }
                 } else if (notFoundMessage != null) {
                   System.out.println(ansi().fgRed().a(notFoundMessage.replaceAll("%", commandName)).reset());
                 }
@@ -179,6 +184,42 @@ public class ConsoleManager {
       inputThread.setDaemon(daemon);
       inputThread.start();
     }
+  }
+
+  /**
+   * Execute a command manually.
+   * @param args Arguments with command at position 0.
+   * @return Status code from command or 404 if command not found.
+   */
+  public int executeCommand(String[] args) {
+    ArrayList<String> argsList = new ArrayList<>(Arrays.asList(currentInputLine.toString().split(" ")));
+    String command = argsList.get(0);
+    argsList.remove(0);
+    if (argsList.size() > 0) {
+      return executeCommand(command, argsList.toArray(new String[0]));
+    } else {
+      return executeCommand(command, new String[]{});
+    }
+  }
+
+  /**
+   * Execute a command manually.
+   * @param command The command name.
+   * @param args Arguments for the command.
+   * @return Status code from command or 404 if command not found.
+   */
+  public int executeCommand(String command, String[] args) {
+    boolean isAnsiInstalled = AnsiConsole.isInstalled();
+    if (!isAnsiInstalled) AnsiConsole.systemInstall();
+    if (commands.containsKey(command)) {
+      int tmp = new CommandLine(commands.get(command).getClass()).execute(args);
+      if (!isAnsiInstalled) AnsiConsole.systemUninstall();
+      return tmp;
+    } else if (notFoundMessage != null) {
+      System.out.println(ansi().fgRed().a(notFoundMessage.replaceAll("%", command)).reset());
+    }
+    if (!isAnsiInstalled) AnsiConsole.systemUninstall();
+    return 404;
   }
 
   /**
