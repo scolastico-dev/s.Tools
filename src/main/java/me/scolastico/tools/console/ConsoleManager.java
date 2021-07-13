@@ -90,7 +90,7 @@ public class ConsoleManager {
    * @throws IOException IOExceptions from the System.out and System.in read/write actions.
    */
   public static synchronized void enable(boolean daemon) throws IOException {
-    if (!enabled) {
+    if (!enabled && !ConsoleLoadingAnimation.isEnabled()) {
 
       if (registerDefaults) {
         if (!commands.containsKey("list-commands")) {
