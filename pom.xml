@@ -8,7 +8,7 @@
   <groupId>me.scolastico</groupId>
   <artifactId>tools</artifactId>
   <version>dev-snapshot</version>
-  <url>https://github.com/scolastico/s.Tools</url>
+  <url>https://github.com/scolastico-dev/s.Tools</url>
   <description>Simple tools for simple usage!</description>
 
   <developers>
@@ -29,9 +29,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/scolastico/s.Tools.git</connection>
-    <developerConnection>scm:git:git://github.com/scolastico/s.Tools.git</developerConnection>
-    <url>https://github.com/scolasticos.Tools</url>
+    <connection>scm:git:git://github.com/scolastico-dev/s.Tools.git</connection>
+    <developerConnection>scm:git:git://github.com/scolastico-dev/s.Tools.git</developerConnection>
+    <url>https://github.com/scolastico-dev/s.Tools</url>
     <tag>HEAD</tag>
   </scm>
 
