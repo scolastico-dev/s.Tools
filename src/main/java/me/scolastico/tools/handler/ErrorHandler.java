@@ -10,7 +10,6 @@ import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Handle your errors automatically.
@@ -20,6 +19,7 @@ public class ErrorHandler implements UncaughtExceptionHandler {
 
   private static boolean sentry = false;
   private static File errorLog = null;
+  private static boolean createdNewLog = false;
 
   /**
    * Its not recommended to use the instance.
@@ -53,21 +53,13 @@ public class ErrorHandler implements UncaughtExceptionHandler {
     try {
       errorLog = new File("error.log");
       if (errorLog.exists()) {
-        if (FileUtils.readFileToString(errorLog, StandardCharsets.UTF_8).split("\r\n|\r|\n").length != 2) {
-          int counter = 2;
-          File destination = new File("error." + counter + ".log");
-          while (destination.exists()) {
-            counter++;
-            destination = new File("error." + counter + ".log");
-          }
-          FileUtils.copyFile(errorLog, destination);
+        int counter = 2;
+        File destination = new File("error." + counter + ".log");
+        while (destination.exists()) {
+          counter++;
+          destination = new File("error." + counter + ".log");
         }
-        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000 + "\n", StandardCharsets.UTF_8, false);
-      } else if (!errorLog.createNewFile()) {
-        errorLog = null;
-        throw new Exception("Cant create error.log file!");
-      } else {
-        FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000 + "\n", StandardCharsets.UTF_8, false);
+        FileUtils.moveFile(errorLog, destination);
       }
     } catch (Exception e) {
       handle(e);
@@ -107,6 +99,10 @@ public class ErrorHandler implements UncaughtExceptionHandler {
     System.err.println(exceptionAsString);
     if (errorLog != null) {
       try {
+        if (!createdNewLog) {
+          createdNewLog = true;
+          FileUtils.writeStringToFile(errorLog, "Error log created at (UNIX) " + System.currentTimeMillis()/1000 + "\n\n", StandardCharsets.UTF_8, false);
+        }
         FileUtils.writeStringToFile(
             errorLog,
             "Time (UNIX): " + System.currentTimeMillis()/1000 + "\nMessage: " + e.getMessage() + "\nStack Trace:\n" + exceptionAsString+"\n\n",
@@ -114,7 +110,7 @@ public class ErrorHandler implements UncaughtExceptionHandler {
             true
         );
       } catch (IOException exception) {
-        System.out.println("WARNING: Can't write stacktrace to the 'error.log' file!");
+        System.err.println("WARNING: Can't write stacktrace to the 'error.log' file!");
       }
     }
   }
