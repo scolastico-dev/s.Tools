@@ -191,7 +191,7 @@ public class ConsoleManager {
    * @param args Arguments with command at position 0.
    * @return Status code from command or 404 if command not found.
    */
-  public int executeCommand(String[] args) {
+  public static int executeCommand(String[] args) {
     ArrayList<String> argsList = new ArrayList<>(Arrays.asList(currentInputLine.toString().split(" ")));
     String command = argsList.get(0);
     argsList.remove(0);
@@ -208,7 +208,7 @@ public class ConsoleManager {
    * @param args Arguments for the command.
    * @return Status code from command or 404 if command not found.
    */
-  public int executeCommand(String command, String[] args) {
+  public static int executeCommand(String command, String[] args) {
     boolean isAnsiInstalled = AnsiConsole.isInstalled();
     if (!isAnsiInstalled) AnsiConsole.systemInstall();
     if (commands.containsKey(command)) {
