@@ -17,16 +17,17 @@ import java.util.List;
 import java.util.Set;
 import me.scolastico.tools.dataholder.SchedulerConfiguration;
 import me.scolastico.tools.handler.SchedulerHandler;
+import me.scolastico.tools.pairs.Pair;
 import me.scolastico.tools.simplified.SimplifiedResourceFileReader;
 import me.scolastico.tools.simplified.URLCoder;
-import me.scolastico.tools.web.dataholder.WebServerRegistrationData;
 import me.scolastico.tools.web.annoations.WebServerRegistration;
+import me.scolastico.tools.web.dataholder.WebServerRegistrationData;
 import me.scolastico.tools.web.enums.SpecialWebsite;
 import me.scolastico.tools.web.enums.WebServerRequestType;
 import me.scolastico.tools.web.exceptions.WebServerRegistrationException;
 import me.scolastico.tools.web.interfaces.AdvancedWebsiteInterface;
 import me.scolastico.tools.web.interfaces.SimpleWebsiteInterface;
-import me.scolastico.tools.pairs.Pair;
+import me.scolastico.tools.web.interfaces.WebServerPreExecuterInterface;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -43,6 +44,7 @@ public class WebServer implements HttpHandler {
   private static HttpServer server;
   private static ArrayList<WebServerRegistrationData> registrations = null;
   private static HashMap<SpecialWebsite, WebServerRegistrationData> specialRegistrations = null;
+  private static ArrayList<WebServerPreExecuterInterface> preExecuter = new ArrayList<>();
   private static HashMap<String, Integer> usageWeights = new HashMap<>();
   private static boolean checkOverrideFolderFirst = false;
   private static boolean checkResourcesAfter = false;
@@ -183,6 +185,7 @@ public class WebServer implements HttpHandler {
       server.createContext("/",new WebServer());
       server.start();
       schedulerId = SchedulerHandler.registerTask(schedulerConfiguration);
+      SchedulerHandler.enable();
     }
   }
 
@@ -288,10 +291,22 @@ public class WebServer implements HttpHandler {
     return registrations != null;
   }
 
+  /**
+   * Register an pre executer which will be executed every time before the request is processed.
+   * If it returns false the handler stops handling the request and will return.
+   * @param preExec The executer to be registered.
+   */
+  public static void registerWebServerPreExecuter(WebServerPreExecuterInterface preExec) {
+    preExecuter.add(preExec);
+  }
+
   private WebServer() {}
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
+    for (WebServerPreExecuterInterface preExec:preExecuter) {
+      if (!preExec.execute(exchange)) return;
+    }
     String path = exchange.getRequestURI().getPath();
     String pathWithIndexReplacementIfNeeded = path.endsWith("/") ? path + "index.html" : path;
     if (checkOverrideFolderFirst) {
