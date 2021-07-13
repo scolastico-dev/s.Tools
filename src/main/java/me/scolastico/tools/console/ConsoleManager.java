@@ -192,7 +192,7 @@ public class ConsoleManager {
    * @return Status code from command or 404 if command not found.
    */
   public static int executeCommand(String[] args) {
-    ArrayList<String> argsList = new ArrayList<>(Arrays.asList(currentInputLine.toString().split(" ")));
+    ArrayList<String> argsList = new ArrayList<>(Arrays.asList(args));
     String command = argsList.get(0);
     argsList.remove(0);
     if (argsList.size() > 0) {
