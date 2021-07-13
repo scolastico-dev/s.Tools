@@ -42,6 +42,7 @@ public class ConsoleManager {
   private static StringBuilder currentInputLine = new StringBuilder();
   private static String notFoundMessage = "Command '%' not found! Try 'list-commands' to get a list of all commands!";
   private static boolean appendTime = true;
+  private static ArrayList<ConsolePreOutputModificatorInterface> preOutputModifyList = new ArrayList<>();
 
   /**
    * Stop the ConsoleManager. This function also resets the most internal values including the last output array.
@@ -121,6 +122,9 @@ public class ConsoleManager {
           Scanner scanner = new Scanner(in);
           while (enabled) {
             String output = scanner.nextLine();
+            for (ConsolePreOutputModificatorInterface modificator:preOutputModifyList) {
+              output = modificator.modifyOutput(output);
+            }
             if (appendTime) output = "[" + getTimeString() + "] " + output;
             defaultStream.println();
             defaultStream.print(ansi().cursorUpLine().a("\033[1L").a(output).cursorDownLine().a(prefix).a(currentInputLine.toString()));
@@ -273,6 +277,14 @@ public class ConsoleManager {
       System.exit(0);
       return 0;
     }
+  }
+
+  /**
+   * Add a console pre output modificator to change the output before its send to the console.
+   * @param modificator The modificator to register.
+   */
+  public static void registerPreOutputModificator(ConsolePreOutputModificatorInterface modificator) {
+    preOutputModifyList.add(modificator);
   }
 
   private static String getTimeString() {
