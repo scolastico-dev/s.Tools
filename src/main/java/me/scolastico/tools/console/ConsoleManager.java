@@ -42,7 +42,7 @@ public class ConsoleManager {
   private static StringBuilder currentInputLine = new StringBuilder();
   private static String notFoundMessage = "Command '%' not found! Try 'list-commands' to get a list of all commands!";
   private static boolean appendTime = true;
-  private static ArrayList<ConsolePreOutputModificatorInterface> preOutputModifyList = new ArrayList<>();
+  private static final ArrayList<ConsolePreOutputModificatorInterface> preOutputModifyList = new ArrayList<>();
 
   /**
    * Stop the ConsoleManager. This function also resets the most internal values including the last output array.
@@ -55,7 +55,6 @@ public class ConsoleManager {
 
       enabled = false;
       System.setOut(defaultStream);
-      AnsiConsole.systemUninstall();
 
       int timeOut = 0;
       while (

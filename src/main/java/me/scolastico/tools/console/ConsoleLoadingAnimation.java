@@ -1,6 +1,7 @@
 package me.scolastico.tools.console;
 
 import java.util.concurrent.TimeoutException;
+import org.fusesource.jansi.AnsiConsole;
 
 /**
  * A simple function to create a loading animation in the console.
@@ -21,6 +22,7 @@ public class ConsoleLoadingAnimation {
    */
   public static synchronized void enable() {
     if (!enabled && !ConsoleManager.isEnabled()) {
+      if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
       enabled = true;
       thread = new Thread(new Runnable() {
         @Override
