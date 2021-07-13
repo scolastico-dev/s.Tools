@@ -13,12 +13,16 @@ public class SchedulerHandler extends TimerTask {
   private static long counter = 0;
   private static final HashMap<Long, SchedulerConfiguration> configurations = new HashMap<>();
   private static final Timer timer = new Timer();
+  private static boolean enabled = false;
 
   /**
-   * Enable the SchedulerHandler. Please be careful to not enable twice.
+   * Enable the SchedulerHandler.
    */
   public static void enable() {
-    timer.scheduleAtFixedRate(new SchedulerHandler(), 50, 50);
+    if (!enabled) {
+      enabled = true;
+      timer.scheduleAtFixedRate(new SchedulerHandler(), 50, 50);
+    }
   }
 
   /**
