@@ -593,6 +593,7 @@ public class WebServer implements HttpHandler {
         }
 
         @Override
+        @Deprecated
         public int getContentLength() {
           return 0; //tested to work with 0 as return; deprecated anyways
         }
