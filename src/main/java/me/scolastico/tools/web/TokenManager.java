@@ -26,12 +26,8 @@ public class TokenManager {
         token = exchange.getRequestHeaders().getFirst("Authorization");
         if (token.startsWith("Bearer ")) token = token.substring(7);
       }
-      if (token == null && exchange.getRequestHeaders().containsKey("Cookie")) {
-        for (String cookie:exchange.getResponseHeaders().getFirst("Cookie").split("; ")) {
-          if (cookie.startsWith("j_session_auth=")) {
-            token = cookie.substring(15);
-          }
-        }
+      if (token == null) {
+        token = CookieManager.getCookie(exchange, "j_session_auth");
       }
     } catch (Exception ignored) {}
     return token;
