@@ -31,6 +31,7 @@ public class ConsoleManager {
   private static ArrayList<String> lastOutput = new ArrayList<>();
   private static int storeLineNumber = 1024;
   private static PrintStream defaultStream = null;
+  private static PrintStream defaultErrStream = null;
   private static Thread outputThread = null;
   private static Thread inputThread = null;
   private static PipedInputStream in = null;
@@ -55,6 +56,10 @@ public class ConsoleManager {
 
       enabled = false;
       System.setOut(defaultStream);
+      if (defaultErrStream != null) {
+        System.setErr(defaultStream);
+        defaultErrStream = null;
+      }
 
       int timeOut = 0;
       while (
@@ -89,7 +94,17 @@ public class ConsoleManager {
    * @param daemon Start the threads as daemon's? Default is true.
    * @throws IOException IOExceptions from the System.out and System.in read/write actions.
    */
-  public static synchronized void enable(boolean daemon) throws IOException {
+  public static void enable(boolean daemon) throws IOException {
+    enable(daemon, false);
+  }
+
+  /**
+   * Start the ConsoleManager.
+   * @param daemon Start the threads as daemon's? Default is true.
+   * @param alsoErrStream Also care about the error stream? Default is false.
+   * @throws IOException IOExceptions from the System.out and System.in read/write actions.
+   */
+  public static synchronized void enable(boolean daemon, boolean alsoErrStream) throws IOException {
     if (!enabled && !ConsoleLoadingAnimation.isEnabled()) {
 
       if (registerDefaults) {
@@ -105,13 +120,16 @@ public class ConsoleManager {
 
       if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
       defaultStream = System.out;
+      if (alsoErrStream) defaultErrStream = System.err;
       PipedOutputStream out = new PipedOutputStream();
       in = new PipedInputStream(out, 2048);
 
       System.setOut(null);
       terminal = TerminalBuilder.builder().jna(true).system(true).build();
       terminal.enterRawMode();
-      System.setOut(new PrintStream(out));
+      PrintStream newOut = new PrintStream(out);
+      System.setOut(newOut);
+      if (alsoErrStream) System.setErr(new PrintStream(newOut));
 
       defaultStream.print(ansi().bold().a(prefix).reset());
 
