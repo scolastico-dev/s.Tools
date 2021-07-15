@@ -42,7 +42,7 @@ public class ConsoleLoadingAnimation {
               currentSpeedStep++;
             } catch (InterruptedException e) {
               e.printStackTrace();
-            }
+            } catch (NullPointerException ignored) {}
           }
         }
       });
