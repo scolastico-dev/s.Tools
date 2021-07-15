@@ -8,7 +8,7 @@ import me.scolastico.tools.dataholder.SchedulerConfiguration;
 /**
  * SchedulerHandler for easy scheduling of tasks!
  */
-public class SchedulerHandler extends TimerTask {
+public class SchedulerHandler {
 
   private static long counter = 0;
   private static final HashMap<Long, SchedulerConfiguration> configurations = new HashMap<>();
@@ -21,7 +21,15 @@ public class SchedulerHandler extends TimerTask {
   public static void enable() {
     if (!enabled) {
       enabled = true;
-      timer.scheduleAtFixedRate(new SchedulerHandler(), 50, 50);
+      timer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+          for (Long id:configurations.keySet()) {
+            SchedulerConfiguration configuration = configurations.get(id);
+            configuration.executeTick(id);
+          }
+        }
+      }, 50, 50);
     }
   }
 
@@ -43,14 +51,5 @@ public class SchedulerHandler extends TimerTask {
   public static void removeConfiguration(long id) {
     configurations.remove(id);
   }
-
-  @Override
-  public void run() {
-    for (SchedulerConfiguration configuration:configurations.values()) {
-      configuration.executeTick();
-    }
-  }
-
-  private SchedulerHandler() {}
 
 }

@@ -315,6 +315,9 @@ public class WebServer implements HttpHandler {
         byte[] bytes = FileUtils.readFileToByteArray(file);
         exchange.sendResponseHeaders(200, bytes.length);
         IOUtils.write(bytes, exchange.getResponseBody());
+        try {
+          exchange.close();
+        } catch (Exception ignored) {}
         return;
       }
     }
@@ -486,6 +489,9 @@ public class WebServer implements HttpHandler {
               if (bytes != null && bytes.length != 0) {
                 exchange.sendResponseHeaders(200, bytes.length);
                 IOUtils.write(bytes, exchange.getResponseBody());
+                try {
+                  exchange.close();
+                } catch (Exception ignored) {}
                 return;
               }
             } catch (Exception ignored) {}
@@ -593,6 +599,7 @@ public class WebServer implements HttpHandler {
         }
 
         @Override
+        @Deprecated
         public int getContentLength() {
           return 0; //tested to work with 0 as return; deprecated anyways
         }
