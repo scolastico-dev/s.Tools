@@ -28,7 +28,7 @@ public class ConsoleLoadingAnimation {
         @Override
         public void run() {
           int currentSpeedStep = 0;
-          System.out.print(animation[0]);
+          if (System.out != null) System.out.print(animation[0]);
           while (enabled) {
             try {
               if (currentSpeedStep >= speed) {
@@ -42,7 +42,7 @@ public class ConsoleLoadingAnimation {
               currentSpeedStep++;
             } catch (InterruptedException e) {
               e.printStackTrace();
-            } catch (NullPointerException ignored) {}
+            }
           }
         }
       });
