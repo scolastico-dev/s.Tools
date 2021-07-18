@@ -305,7 +305,12 @@ public class WebServer implements HttpHandler {
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     for (WebServerPreExecuterInterface preExec:preExecuter) {
-      if (!preExec.execute(exchange)) return;
+      if (!preExec.execute(exchange)) {
+        try {
+          exchange.close();
+        } catch (Exception ignored) {}
+        return;
+      }
     }
     String path = exchange.getRequestURI().getPath();
     String pathWithIndexReplacementIfNeeded = path.endsWith("/") ? path + "index.html" : path;
