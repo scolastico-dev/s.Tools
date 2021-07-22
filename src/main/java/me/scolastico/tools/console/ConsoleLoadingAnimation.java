@@ -1,5 +1,7 @@
 package me.scolastico.tools.console;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.TimeoutException;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -15,26 +17,40 @@ public class ConsoleLoadingAnimation {
   private static char[] animation = {'⣾','⣽','⣻','⢿','⡿','⣟','⣯','⣷'};
   private static int step = 0;
   private static int speed = 25;
+  private static PrintStream defaultStream;
+  private static boolean takenOverOutputStream = false;
+
+  /**
+   * Enable the loading animation and take over print stream to prevent output while loading.
+   * <b>Cant be used with ConsoleManager together.</b>
+   */
+  public static void enable() {
+    enable(true);
+  }
 
   /**
    * Enable the loading animation.
    * <b>Cant be used with ConsoleManager together.</b>
+   * @param takeOverSystemOutputStream Take over the output stream from System.out to prevent output while showing loading animation?
    */
-  public static synchronized void enable() {
+  public static synchronized void enable(boolean takeOverSystemOutputStream) {
     if (!enabled && !ConsoleManager.isEnabled()) {
+      defaultStream = System.out;
+      takenOverOutputStream = takeOverSystemOutputStream;
+      if (takeOverSystemOutputStream) System.setOut(new PrintStream(new ByteArrayOutputStream()));
       if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
       enabled = true;
       thread = new Thread(new Runnable() {
         @Override
         public void run() {
           int currentSpeedStep = 0;
-          if (System.out != null) System.out.print(animation[0]);
+          if (System.out != null) defaultStream.print(animation[0]);
           while (enabled) {
             try {
               if (currentSpeedStep >= speed) {
                 currentSpeedStep = 0;
-                System.out.print((char) 8);
-                System.out.print(animation[step]);
+                defaultStream.print((char) 8);
+                defaultStream.print(animation[step]);
                 step++;
                 if (step >= animation.length) step = 0;
               }
@@ -59,6 +75,7 @@ public class ConsoleLoadingAnimation {
   public static synchronized void disable() throws InterruptedException, TimeoutException {
     if (enabled) {
       enabled = false;
+      if (takenOverOutputStream) System.setOut(defaultStream);
       int timeOut = 0;
       while (thread != null && thread.isAlive()) {
         Thread.sleep(50);
@@ -67,7 +84,7 @@ public class ConsoleLoadingAnimation {
           throw new TimeoutException("The output and input threads are still running and not shutting down.");
         }
       }
-      System.out.print((char) 8);
+      defaultStream.print((char) 8);
     }
   }
 
