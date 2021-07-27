@@ -22,18 +22,20 @@ public class CookieManager {
    * @return The value of the cookie or null if not found.
    */
   public static String getCookie(HttpExchange exchange, String cookieName) {
-    for (String cookies:exchange.getRequestHeaders().get("Cookie")) {
-      for (String cookie:cookies.split("; ")) {
-        String[] nameAndValue = cookie.split("=");
-        if (nameAndValue.length == 2) {
-          String name = nameAndValue[0];
-          String value = nameAndValue[1];
-          if (name.equals(removeNotAllowedChars(cookieName))) {
-            return URLCoder.decodeURL(value);
+    try {
+      for (String cookies:exchange.getRequestHeaders().get("Cookie")) {
+        for (String cookie:cookies.split("; ")) {
+          String[] nameAndValue = cookie.split("=");
+          if (nameAndValue.length == 2) {
+            String name = nameAndValue[0];
+            String value = nameAndValue[1];
+            if (name.equals(removeNotAllowedChars(cookieName))) {
+              return URLCoder.decodeURL(value);
+            }
           }
         }
       }
-    }
+    } catch (NullPointerException ignored) {}
     return null;
   }
 
