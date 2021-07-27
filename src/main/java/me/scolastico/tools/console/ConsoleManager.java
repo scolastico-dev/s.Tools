@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
@@ -136,19 +137,23 @@ public class ConsoleManager {
       outputThread = new Thread(new Runnable() {
         @Override
         public void run() {
-          Scanner scanner = new Scanner(in);
-          while (enabled) {
-            String output = scanner.nextLine();
-            for (ConsolePreOutputModificatorInterface modificator:preOutputModifyList) {
-              output = modificator.modifyOutput(output);
-            }
-            if (appendTime) output = "[" + getTimeString() + "] " + output;
-            defaultStream.println();
-            defaultStream.print(ansi().cursorUpLine().a("\033[1L").a(output).cursorDownLine().a(prefix).a(currentInputLine.toString()));
-            lastOutput.add(output);
-            while (lastOutput.size() > storeLineNumber) {
-              lastOutput.remove(0);
-            }
+          while(enabled) {
+            try {
+              Scanner scanner = new Scanner(in);
+              while (enabled) {
+                String output = scanner.nextLine();
+                for (ConsolePreOutputModificatorInterface modificator:preOutputModifyList) {
+                  output = modificator.modifyOutput(output);
+                }
+                if (appendTime) output = "[" + getTimeString() + "] " + output;
+                defaultStream.println();
+                defaultStream.print(ansi().cursorUpLine().a("\033[1L").a(output).cursorDownLine().a(prefix).a(currentInputLine.toString()));
+                lastOutput.add(output);
+                while (lastOutput.size() > storeLineNumber) {
+                  lastOutput.remove(0);
+                }
+              }
+            } catch (NoSuchElementException ignored) {}
           }
         }
       });
@@ -161,6 +166,7 @@ public class ConsoleManager {
               char c = (char) terminal.reader().read();
               if (!String.valueOf(c).matches(".")) {
                 ArrayList<String> args = new ArrayList<>(Arrays.asList(currentInputLine.toString().split(" ")));
+                currentInputLine = new StringBuilder();
                 String commandName = args.get(0);
                 args.remove(0);
                 defaultStream.println();
@@ -175,7 +181,6 @@ public class ConsoleManager {
                 } else if (notFoundMessage != null) {
                   System.out.println(ansi().fgRed().a(notFoundMessage.replaceAll("%", commandName)).reset());
                 }
-                currentInputLine = new StringBuilder();
               } else {
                 int currentLength = prefix.length()+currentInputLine.length();
                 if (c == backspace) {
