@@ -31,6 +31,7 @@ public class RoutineManager {
 
   private synchronized void execute(HashMap<String, Object> objectMap) {
     running = true;
+    canceled = false;
     try {
       Routine[] skippedRoutine = null;
       for (Routine routine : routineList) {
@@ -48,6 +49,7 @@ public class RoutineManager {
         RoutineAnswer answer = routine.execute(objectMap);
         if (answer.isStop()) {
           errorMessage = answer.getErrorMessage();
+          canceled = true;
           if (canceledRoutine != null) {
             lastExecutedClass = canceledRoutine.getClass();
             canceledRoutine.execute(objectMap);
@@ -62,6 +64,7 @@ public class RoutineManager {
     } catch (Exception e) {
       if (!(e instanceof InterruptedException)) {
         ErrorHandler.handle(e);
+        canceled = true;
       }
     }
     running = false;
