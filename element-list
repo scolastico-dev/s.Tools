@@ -4,6 +4,7 @@ me.scolastico.tools.handler
 me.scolastico.tools.pairs
 me.scolastico.tools.routine
 me.scolastico.tools.simplified
+me.scolastico.tools.simplified.rsa
 me.scolastico.tools.web
 me.scolastico.tools.web.annoations
 me.scolastico.tools.web.dataholder
