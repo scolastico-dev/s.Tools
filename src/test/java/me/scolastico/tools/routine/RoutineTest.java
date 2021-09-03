@@ -17,6 +17,7 @@ public class RoutineTest {
     Assertions.assertFalse(manager.isRunning());
     Assertions.assertFalse(manager.isCanceled());
     Assertions.assertTrue(manager.isStarted());
+    Assertions.assertEquals(456, manager.getLastObjectMap().get("test2"));
   }
 
 }

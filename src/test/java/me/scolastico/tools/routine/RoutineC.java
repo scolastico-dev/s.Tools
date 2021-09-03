@@ -9,6 +9,7 @@ public class RoutineC implements Routine {
   public RoutineAnswer execute(HashMap<String, Object> objectMap) throws Exception {
     System.out.println("Running [C]");
     Assertions.assertEquals(123, objectMap.get("test"));
+    objectMap.put("test2", 456);
     return new RoutineAnswer(objectMap);
   }
 

@@ -18,6 +18,7 @@ public class RoutineManager {
   private Thread thread = null;
   private String errorMessage = null;
   private Class<?> lastExecutedClass = null;
+  private HashMap<String, Object> lastObjectMap = null;
 
   public RoutineManager(List<Routine> routineList) {
     this.routineList = routineList;
@@ -28,7 +29,7 @@ public class RoutineManager {
     this.canceledRoutine = canceledRoutine;
   }
 
-  private void execute(HashMap<String, Object> objectMap) {
+  private synchronized void execute(HashMap<String, Object> objectMap) {
     running = true;
     try {
       Routine[] skippedRoutine = null;
@@ -53,6 +54,7 @@ public class RoutineManager {
           }
           break;
         }
+        lastObjectMap = answer.getObjectMap();
         objectMap = answer.getObjectMap();
         skippedRoutine = answer.getSkippedRoutine();
         Thread.sleep(10);
@@ -98,6 +100,10 @@ public class RoutineManager {
       canceled = true;
       running = false;
     }
+  }
+
+  public HashMap<String, Object> getLastObjectMap() {
+    return lastObjectMap;
   }
 
   public String getErrorMessage() {
