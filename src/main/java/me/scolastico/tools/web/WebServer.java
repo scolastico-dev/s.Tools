@@ -18,6 +18,8 @@ import java.util.Set;
 import me.scolastico.tools.dataholder.SchedulerConfiguration;
 import me.scolastico.tools.handler.SchedulerHandler;
 import me.scolastico.tools.pairs.Pair;
+import me.scolastico.tools.routine.Routine;
+import me.scolastico.tools.routine.RoutineManager;
 import me.scolastico.tools.simplified.SimplifiedResourceFileReader;
 import me.scolastico.tools.simplified.URLCoder;
 import me.scolastico.tools.web.annoations.WebServerRegistration;
@@ -27,6 +29,7 @@ import me.scolastico.tools.web.enums.WebServerRequestType;
 import me.scolastico.tools.web.exceptions.WebServerRegistrationException;
 import me.scolastico.tools.web.interfaces.AdvancedWebsiteInterface;
 import me.scolastico.tools.web.interfaces.SimpleWebsiteInterface;
+import me.scolastico.tools.web.interfaces.SimpleWebsiteInterfaceWithPreHandler;
 import me.scolastico.tools.web.interfaces.WebServerPreExecuterInterface;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.RequestContext;
@@ -54,6 +57,7 @@ public class WebServer implements HttpHandler {
   private static int maxUsageWeight = 60000;
   private static int weightLessPerSecond = 100;
   private static long schedulerId = 0L;
+  private static ArrayList<Routine> routines = new ArrayList<>();
 
   private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
   private static final SchedulerConfiguration schedulerConfiguration = new SchedulerConfiguration(20, new Runnable() {
@@ -68,6 +72,21 @@ public class WebServer implements HttpHandler {
       }
     }
   });
+
+  /**
+   * Clear the pre handler list for SimpleWebsiteInterfaceWithPreHandler.
+   */
+  public static void clearPreHandler() {
+    routines = new ArrayList<>();
+  }
+
+  /**
+   * Add a pre handler to be run before an SimpleWebsiteInterfaceWithPreHandler
+   * @param routine A routine for the pre handler to be run.
+   */
+  public static void addPreHandler(Routine routine) {
+    routines.add(routine);
+  }
 
   /**
    * Should if an file override or an resource is found
@@ -218,6 +237,11 @@ public class WebServer implements HttpHandler {
         AdvancedWebsiteInterface obj = c.getDeclaredConstructor().newInstance();
         registerWebInterface(obj);
       }
+      Set<Class<? extends SimpleWebsiteInterfaceWithPreHandler>> simpleWClasses = reflections.getSubTypesOf(SimpleWebsiteInterfaceWithPreHandler.class);
+      for (Class<? extends SimpleWebsiteInterfaceWithPreHandler> c:simpleWClasses) {
+        SimpleWebsiteInterfaceWithPreHandler obj = c.getDeclaredConstructor().newInstance();
+        registerWebInterface(obj);
+      }
     } catch (Exception e) {
       throw new WebServerRegistrationException(e.getMessage());
     }
@@ -234,18 +258,24 @@ public class WebServer implements HttpHandler {
         if (method.isAnnotationPresent(WebServerRegistration.class)) {
           WebServerRegistration registration = method.getAnnotation(WebServerRegistration.class);
           if (registration.website() == SpecialWebsite.NORMAL_PAGE) {
-            if (method.getName().equals("getRequest")) {
-              registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.GET));
-            } else if (method.getName().equals("postRequest")) {
-              registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.POST));
-            } else if (method.getName().equals("putRequest")) {
-              registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.PUT));
-            } else if (method.getName().equals("patchRequest")) {
-              registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.PATCH));
-            } else if (method.getName().equals("deleteRequest")) {
-              registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.DELETE));
-            } else {
-              throw new WebServerRegistrationException("Method '" + method.getName() + "' not allowed for registration!");
+            switch (method.getName()) {
+              case "getRequest":
+                registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.GET));
+                break;
+              case "postRequest":
+                registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.POST));
+                break;
+              case "putRequest":
+                registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.PUT));
+                break;
+              case "patchRequest":
+                registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.PATCH));
+                break;
+              case "deleteRequest":
+                registrations.add(new WebServerRegistrationData(websiteInterface, registration, WebServerRequestType.DELETE));
+                break;
+              default:
+                throw new WebServerRegistrationException("Method '" + method.getName() + "' not allowed for registration!");
             }
           } else {
             throw new WebServerRegistrationException("The advanced website interfaces does not support SpecialWebsites.");
@@ -261,6 +291,34 @@ public class WebServer implements HttpHandler {
    * @throws WebServerRegistrationException Throws WebserverRegistrationException if the registration fails.
    */
   public static void registerWebInterface(SimpleWebsiteInterface websiteInterface) throws WebServerRegistrationException {
+    if (registrations != null) {
+      for (Method method:websiteInterface.getClass().getDeclaredMethods()) {
+        if (method.isAnnotationPresent(WebServerRegistration.class)) {
+          WebServerRegistration registration = method.getAnnotation(WebServerRegistration.class);
+          if (method.getName().equals("handleRequest")) {
+            if (registration.website() == SpecialWebsite.NORMAL_PAGE) {
+              registrations.add(new WebServerRegistrationData(websiteInterface, registration));
+            } else {
+              if (specialRegistrations.containsKey(registration.website())) {
+                throw new WebServerRegistrationException("Failed registering special website '" + registration.website().toString() + "' because its already existing.");
+              } else {
+                specialRegistrations.put(registration.website(), new WebServerRegistrationData(websiteInterface, registration));
+              }
+            }
+          } else {
+            throw new WebServerRegistrationException("Method '" + method.getName() + "' not allowed for registration!");
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * If you want to register a single webinterface you can register it with this function.
+   * @param websiteInterface The website interface you want to register.
+   * @throws WebServerRegistrationException Throws WebserverRegistrationException if the registration fails.
+   */
+  public static void registerWebInterface(SimpleWebsiteInterfaceWithPreHandler websiteInterface) throws WebServerRegistrationException {
     if (registrations != null) {
       for (Method method:websiteInterface.getClass().getDeclaredMethods()) {
         if (method.isAnnotationPresent(WebServerRegistration.class)) {
@@ -340,6 +398,7 @@ public class WebServer implements HttpHandler {
     for (WebServerRegistrationData data:registrations) {
       SimpleWebsiteInterface simpleWebsiteInterface = data.getSimpleWebsiteInterface();
       AdvancedWebsiteInterface advancedWebsiteInterface = data.getAdvancedWebsiteInterface();
+      SimpleWebsiteInterfaceWithPreHandler simpleWebsiteInterfaceWithPreHandler = data.getSimpleWebsiteInterfaceWithPreHandler();
       WebServerRegistration registration = data.getRegistration();
       if (userWeight > maxUsageWeight && registration.usageWeight() != 0) {
         limitReached = true;
@@ -359,7 +418,7 @@ public class WebServer implements HttpHandler {
           }
         }
         if (isCorrectPath) {
-          if (simpleWebsiteInterface != null) {
+          if (simpleWebsiteInterface != null || simpleWebsiteInterfaceWithPreHandler != null) {
             if (registration.acceptPost()) {
               acceptPost = true;
             } else if (registration.acceptPatch()) {
@@ -445,6 +504,24 @@ public class WebServer implements HttpHandler {
             try {
               if (simpleWebsiteInterface != null) {
                 ret = simpleWebsiteInterface.handleRequest(exchange, PATH_VALUES, GET_VALUES, X_WWW_FORM_URLENCODED, RAW, FILES, JSON_OBJECT);
+              } else if (simpleWebsiteInterfaceWithPreHandler != null) {
+                if (routines.size() != 0) {
+                  RoutineManager manager = new RoutineManager(routines);
+                  HashMap<String, Object> PRE_HANDLER = new HashMap<>();
+                  PRE_HANDLER.put("HTTP_EXCHANGE", exchange);
+                  manager.startNotAsynchronously(PRE_HANDLER);
+                  if (!manager.isCanceled()) {
+                    PRE_HANDLER = manager.getLastObjectMap();
+                    PRE_HANDLER.remove("HTTP_EXCHANGE");
+                    ret = simpleWebsiteInterfaceWithPreHandler.handleRequest(exchange, PATH_VALUES, GET_VALUES, X_WWW_FORM_URLENCODED, RAW, FILES, JSON_OBJECT, PRE_HANDLER);
+                  } else {
+                    sendSpecialPage(exchange, SpecialWebsite.INTERNAL_ERROR_PAGE, 500, "internal error");
+                    exchange.close();
+                    return;
+                  }
+                } else {
+                  ret = simpleWebsiteInterfaceWithPreHandler.handleRequest(exchange, PATH_VALUES, GET_VALUES, X_WWW_FORM_URLENCODED, RAW, FILES, JSON_OBJECT, new HashMap<>());
+                }
               } else if (advancedWebsiteInterface != null) {
                 if (acceptGet) {
                   ret = advancedWebsiteInterface.getRequest(exchange, PATH_VALUES, GET_VALUES);
@@ -465,7 +542,7 @@ public class WebServer implements HttpHandler {
             } catch (Exception e) {
               e.printStackTrace();
               try {
-                sendSpecialPage(exchange, SpecialWebsite.INTERNAL_ERROR_PAGE, 500, "not found");
+                sendSpecialPage(exchange, SpecialWebsite.INTERNAL_ERROR_PAGE, 500, "internal error");
                 exchange.close();
               } catch (Exception ignored) {}
               return;

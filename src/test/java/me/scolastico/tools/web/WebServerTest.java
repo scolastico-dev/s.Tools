@@ -7,10 +7,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import me.scolastico.tools.routine.Routine;
+import me.scolastico.tools.routine.RoutineAnswer;
+import me.scolastico.tools.web.WebServer;
 import me.scolastico.tools.web.annoations.WebServerRegistration;
 import me.scolastico.tools.web.exceptions.WebServerRegistrationException;
 import me.scolastico.tools.web.interfaces.SimpleWebsiteInterface;
 import me.scolastico.tools.pairs.Pair;
+import me.scolastico.tools.web.interfaces.SimpleWebsiteInterfaceWithPreHandler;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -124,6 +128,17 @@ class WebServerTest {
 
   @Test
   @Order(9)
+  void checkPreHandler() throws IOException {
+    WebServer.addPreHandler(new ExamplePreHandler());
+    URL url = new URL("http://localhost:8050/.internal/preTest");
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setConnectTimeout(5000);
+    Assertions.assertEquals(200, connection.getResponseCode());
+    Assertions.assertEquals("{\"status\":\"ok\"}", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+  }
+
+  @Test
+  @Order(10)
   void checkIndividualWrongJsonValue() throws IOException {
     final String random = RandomStringUtils.randomAlphanumeric(20);
     URL url = new URL("http://localhost:8050/.internal/jsonTest");
@@ -137,7 +152,7 @@ class WebServerTest {
   }
 
   @Test
-  @Order(10)
+  @Order(11)
   void checkNotFound() throws IOException {
     URL url = new URL("http://localhost:8050/.internal/404");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -146,7 +161,7 @@ class WebServerTest {
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   void checkWrongMethod() throws IOException {
     URL url = new URL("http://localhost:8050/.internal/echoTest");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -156,7 +171,7 @@ class WebServerTest {
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   void checkTooManyRequests() throws IOException {
     URL url = new URL("http://localhost:8050/.internal/weightTest");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -174,7 +189,7 @@ class WebServerTest {
   }
 
   @Test
-  @Order(13)
+  @Order(14)
   void stop() {
     WebServer.stop();
   }
@@ -255,6 +270,26 @@ class WebServerTest {
     @WebServerRegistration(context = "/.internal/weightTest", usageWeight = 63000)
     public Pair<Integer, String> handleRequest(HttpExchange HTTP_EXCHANGE, String[] PATH_VALUES, HashMap<String, String> GET_VALUES, HashMap<String, String> X_WWW_FORM_URLENCODED, String RAW, List<FileItem> FILES, Object JSON_OBJECT) {
       return new Pair<>(200, "ok");
+    }
+  }
+
+  public static class WebserverPreHandlerTestPage implements SimpleWebsiteInterfaceWithPreHandler {
+    @Override
+    @WebServerRegistration(context = "/.internal/preTest", usageWeight = 63000)
+    public Pair<Integer, String> handleRequest(HttpExchange HTTP_EXCHANGE, String[] PATH_VALUES, HashMap<String, String> GET_VALUES, HashMap<String, String> X_WWW_FORM_URLENCODED, String RAW, List<FileItem> FILES, Object JSON_OBJECT, HashMap<String, Object> PRE_HANDLER) {
+      if (PRE_HANDLER.get("test").equals(123)) {
+        return new Pair<>(200, "{\"status\":\"ok\"}");
+      } else {
+        return new Pair<>(500, "{\"status\":\"error\",\"error\":\"pre handler value 'test' is not '123'\"}");
+      }
+    }
+  }
+
+  public static class ExamplePreHandler implements Routine {
+    @Override
+    public RoutineAnswer execute(HashMap<String, Object> objectMap) throws Exception {
+      objectMap.put("test", 123);
+      return new RoutineAnswer(objectMap);
     }
   }
 
