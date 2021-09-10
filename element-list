@@ -11,3 +11,4 @@ me.scolastico.tools.web.dataholder
 me.scolastico.tools.web.enums
 me.scolastico.tools.web.exceptions
 me.scolastico.tools.web.interfaces
+me.scolastico.tools.web.special.pages.json
