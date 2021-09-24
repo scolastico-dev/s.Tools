@@ -32,7 +32,7 @@ public class ErrorHandler implements UncaughtExceptionHandler {
    * @param sentryDns The sentry dns string for error reporting to sentry.io!
    */
   public static void enableSentry(String sentryDns) {
-    enableSentry(sentryDns, 1.0, null);
+    enableSentry(sentryDns, null, null);
   }
 
   /**
@@ -41,11 +41,11 @@ public class ErrorHandler implements UncaughtExceptionHandler {
    * @param tracesSampleRate https://docs.sentry.io/platforms/java/configuration/sampling/
    * @param release https://docs.sentry.io/platforms/java/configuration/releases/
    */
-  public static void enableSentry(String sentryDns, double tracesSampleRate, String release) {
+  public static void enableSentry(String sentryDns, Double tracesSampleRate, String release) {
     if (!sentry) {
       Sentry.init(options -> {
         options.setDsn(sentryDns);
-        options.setTracesSampleRate(tracesSampleRate);
+        if (tracesSampleRate != null) options.setTracesSampleRate(tracesSampleRate);
         if (release != null) options.setRelease(release);
       });
       sentry = true;
