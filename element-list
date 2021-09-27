@@ -1,11 +1,17 @@
 me.scolastico.tools.console
 me.scolastico.tools.dataholder
+me.scolastico.tools.ebean
 me.scolastico.tools.handler
 me.scolastico.tools.pairs
 me.scolastico.tools.routine
 me.scolastico.tools.simplified
 me.scolastico.tools.simplified.rsa
 me.scolastico.tools.web
+me.scolastico.tools.web.admin
+me.scolastico.tools.web.admin.commands
+me.scolastico.tools.web.admin.dataholder
+me.scolastico.tools.web.admin.webserver
+me.scolastico.tools.web.admin.webserver.api
 me.scolastico.tools.web.annoations
 me.scolastico.tools.web.dataholder
 me.scolastico.tools.web.enums
