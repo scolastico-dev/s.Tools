@@ -8,6 +8,9 @@ import me.scolastico.tools.web.annoations.WebServerRegistration;
 import me.scolastico.tools.web.interfaces.SimpleWebsiteInterface;
 import org.apache.commons.fileupload.FileItem;
 
+/**
+ * Internal class of the admin panel module.
+ */
 public class Pages implements SimpleWebsiteInterface {
 
   public final static String panel =

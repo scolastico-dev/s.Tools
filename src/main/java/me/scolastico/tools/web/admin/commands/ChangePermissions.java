@@ -9,6 +9,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+/**
+ * Internal class of the admin panel module.
+ */
 @Command(
     name = "ap-change-permissions",
     mixinStandardHelpOptions = true,

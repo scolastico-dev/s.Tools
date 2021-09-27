@@ -1,5 +1,8 @@
 package me.scolastico.tools.web.admin.dataholder;
 
+/**
+ * Internal class of the admin panel module.
+ */
 public class AdminData {
 
   private String command = null;

@@ -30,6 +30,9 @@ import me.scolastico.tools.web.admin.webserver.api.Status;
 import me.scolastico.tools.web.exceptions.WebServerRegistrationException;
 import org.apache.commons.lang.RandomStringUtils;
 
+/**
+ * Admin Panel: A simple solution for web based admin actions for an application.
+ */
 public class AdminPanel {
 
   private static final HashMap<String, Pair<String, Instant>> tokens = new HashMap<>();
@@ -46,12 +49,21 @@ public class AdminPanel {
     }
   }
 
+  /**
+   * Enable all functions of the admin panel. Needs a webserver which is running.
+   * @throws IOException Throws IOException if the config file can't be written.
+   * @throws WebServerRegistrationException Should not be possible to be thrown.
+   */
   public static void enable() throws IOException, WebServerRegistrationException {
     enableConfig();
     enableCommands();
     enableWebServer();
   }
 
+  /**
+   * Register all web interfaces. Needs a webserver which is running.
+   * @throws WebServerRegistrationException Should not be possible to be thrown.
+   */
   public static void enableWebServer() throws WebServerRegistrationException {
     WebServer.registerWebInterface(new Get());
     WebServer.registerWebInterface(new Login());
@@ -62,6 +74,9 @@ public class AdminPanel {
     WebServer.registerWebInterface(new Pages());
   }
 
+  /**
+   * Register all commands for the admin panel.
+   */
   public static void enableCommands() {
     ConsoleManager.registerCommand(new AddUser());
     ConsoleManager.registerCommand(new ChangePassword());
@@ -71,6 +86,10 @@ public class AdminPanel {
     ConsoleManager.registerCommand(new ShowUsers());
   }
 
+  /**
+   * Load the admin panel configuration.
+   * @throws IOException Throws IOException if the config file can't be written.
+   */
   public static void enableConfig() throws IOException {
     if (configHandler.checkIfExists()) {
       config = configHandler.loadConfig();

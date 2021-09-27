@@ -8,6 +8,9 @@ import me.scolastico.tools.web.admin.dataholder.AdminConfig;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
+/**
+ * Internal class of the admin panel module.
+ */
 @Command(
     name = "ap-passwd",
     mixinStandardHelpOptions = true,

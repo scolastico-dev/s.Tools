@@ -14,6 +14,9 @@ import me.scolastico.tools.web.annoations.WebServerRegistration;
 import me.scolastico.tools.web.interfaces.SimpleWebsiteInterface;
 import org.apache.commons.fileupload.FileItem;
 
+/**
+ * Internal class of the admin panel module.
+ */
 public class Get implements SimpleWebsiteInterface {
 
   private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();

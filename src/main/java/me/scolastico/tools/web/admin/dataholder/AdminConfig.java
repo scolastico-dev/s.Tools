@@ -3,6 +3,9 @@ package me.scolastico.tools.web.admin.dataholder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Internal class of the admin panel module.
+ */
 public class AdminConfig {
 
   private HashMap<String, String> userAndPasswords = new HashMap<>();

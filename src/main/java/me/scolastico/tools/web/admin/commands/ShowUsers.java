@@ -6,6 +6,9 @@ import me.scolastico.tools.web.admin.AdminPanel;
 import me.scolastico.tools.web.admin.dataholder.AdminConfig;
 import picocli.CommandLine.Command;
 
+/**
+ * Internal class of the admin panel module.
+ */
 @Command(
     name = "ap-show-users",
     mixinStandardHelpOptions = true,
