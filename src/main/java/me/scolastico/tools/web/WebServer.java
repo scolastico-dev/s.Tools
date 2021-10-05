@@ -561,7 +561,7 @@ public class WebServer implements HttpHandler {
       } else {
         if (ret != null) {
           if (ret.getX() != 0) {
-            exchange.sendResponseHeaders(ret.getX(), ret.getY().length());
+            exchange.sendResponseHeaders(ret.getX(), ret.getY().getBytes(StandardCharsets.UTF_8).length);
             IOUtils.write(ret.getY(), exchange.getResponseBody(), StandardCharsets.UTF_8);
           }
         } else {
