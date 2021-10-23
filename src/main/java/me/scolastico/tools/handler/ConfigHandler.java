@@ -3,7 +3,6 @@ package me.scolastico.tools.handler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +16,7 @@ import org.apache.commons.lang3.SystemUtils;
  */
 public class ConfigHandler<Config> {
 
-  private static final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+  private static final Gson gson = new GsonBuilder().serializeNulls().disableHtmlEscaping().setPrettyPrinting().create();
 
   private final String path;
   private final File file;
