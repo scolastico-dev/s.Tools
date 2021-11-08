@@ -130,7 +130,7 @@ public class DatabaseConnector {
 
         case "h2":
           dataSourceConfig.setDriver("org.h2.Driver");
-          dataSourceConfig.setUrl("jdbc:h2:mem" + config.getDatabase());
+          dataSourceConfig.setUrl("jdbc:h2:" + config.getHost());
           break;
       }
       dbConfig.setDataSourceConfig(dataSourceConfig);
