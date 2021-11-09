@@ -11,11 +11,17 @@ import me.scolastico.tools.handler.ErrorHandler;
 import me.scolastico.tools.simplified.PBGson;
 import org.apache.commons.io.FileUtils;
 
+/**
+ * CacheManager for simple storing and accessing of values in cache files.
+ */
 public class CacheManager {
 
   private static CacheData cacheData = null;
   private static ConfigHandler<CacheData> configHandler = null;
 
+  /**
+   * Destroy ALL items in the cache.
+   */
   public static void destroy() {
     try {
       File folder = new File(".cache");
@@ -29,6 +35,10 @@ public class CacheManager {
     }
   }
 
+  /**
+   * Delete an item by its id.
+   * @param id The id of the cache item.
+   */
   public static synchronized void destroy(String id) {
     try {
       CacheData cacheData = getCacheData();
@@ -42,6 +52,9 @@ public class CacheManager {
     }
   }
 
+  /**
+   * Destroy old cache items that expired.
+   */
   public static void destroyOld() {
     CacheData cacheData = getCacheData();
     ArrayList<String> uuids = new ArrayList<>();
@@ -62,10 +75,32 @@ public class CacheManager {
     }
   }
 
+  /**
+   * Get something out of the cache. If it's not existing the callable
+   * will be called for new data which will then be stored in the cache.
+   * If something new is cached it will be stored for 3600 seconds.
+   * @param id The id of the cache item. Should be something unique.
+   * @param classOf The class of the value which should be cached.
+   * @param callable The callable if the cache is empty to get a new value.
+   * @param <X> The type of the value which should be cached.
+   * @return The cached value.
+   * @throws Exception Passthroughs of the callable exceptions.
+   */
   public static <X> X get(String id, Class<X> classOf, Callable<X> callable) throws Exception {
     return get(id, classOf, callable, 3600);
   }
 
+  /**
+   * Get something out of the cache. If it's not existing the callable
+   * will be called for new data which will then be stored in the cache.
+   * @param id The id of the cache item. Should be something unique.
+   * @param classOf The class of the value which should be cached.
+   * @param callable The callable if the cache is empty to get a new value.
+   * @param validUntil How long the cache should be valid. In seconds.
+   * @param <X> The type of the value which should be cached.
+   * @return The cached value.
+   * @throws Exception Passthroughs of the callable exceptions.
+   */
   public static <X> X get(String id, Class<X> classOf, Callable<X> callable, int validUntil) throws Exception {
     destroyOld();
     CacheData cacheData = getCacheData();
@@ -103,10 +138,24 @@ public class CacheManager {
   }
 
 
+  /**
+   * Store something in the cache.
+   * This function will cache for 3600 seconds (one hour).
+   * @param id The id of the cache item. Should be something unique.
+   * @param value The value to store in the cache.
+   * @param <X> The type of the value which should be cached.
+   */
   public static synchronized <X> void store(String id, X value) {
     store(id, value, 3600);
   }
 
+  /**
+   * Store something in the cache.
+   * @param id The id of the cache item. Should be something unique.
+   * @param value The value to store in the cache.
+   * @param validUntil How long the cache should be valid. In seconds.
+   * @param <X> The type of the value which should be cached.
+   */
   public static synchronized <X> void store(String id, X value, int validUntil) {
     destroyOld();
     CacheTypes type;

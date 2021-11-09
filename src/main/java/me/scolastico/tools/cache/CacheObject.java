@@ -2,6 +2,9 @@ package me.scolastico.tools.cache;
 
 import java.time.Instant;
 
+/**
+ * Internal CacheObject object for storing data of the cache.
+ */
 public class CacheObject {
 
   private final CacheTypes type;
