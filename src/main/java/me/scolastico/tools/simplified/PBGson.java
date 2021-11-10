@@ -3,6 +3,10 @@ package me.scolastico.tools.simplified;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * <bold>P</bold>re- <bold>B</bold>uild <bold>G</bold>son
+ * is an object holder for some gson objects which are often build.
+ */
 public class PBGson {
 
   private static final Gson prettyPrint = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
