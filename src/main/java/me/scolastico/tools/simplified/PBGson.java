@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * <bold>P</bold>re- <bold>B</bold>uild <bold>G</bold>son
+ * Pre- Build Gson
  * is an object holder for some gson objects which are often build.
  */
 public class PBGson {
