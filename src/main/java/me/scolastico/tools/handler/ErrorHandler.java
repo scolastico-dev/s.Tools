@@ -104,6 +104,7 @@ public class ErrorHandler implements UncaughtExceptionHandler {
         event.setExtra("Debug Information [" + i + "]", info);
         i++;
       }
+      Sentry.captureEvent(event);
     }
     StringWriter stringWriter = new StringWriter();
     e.printStackTrace(new PrintWriter(stringWriter));
