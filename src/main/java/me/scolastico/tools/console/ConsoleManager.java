@@ -2,19 +2,40 @@ package me.scolastico.tools.console;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.gui2.BasicWindow;
+import com.googlecode.lanterna.gui2.DefaultWindowManager;
+import com.googlecode.lanterna.gui2.Direction;
+import com.googlecode.lanterna.gui2.EmptySpace;
+import com.googlecode.lanterna.gui2.Label;
+import com.googlecode.lanterna.gui2.LinearLayout;
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.TextBox;
+import com.googlecode.lanterna.gui2.Window.Hint;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
+import me.scolastico.tools.etc.InterruptibleThread;
+import me.scolastico.tools.etc.ThreadPrintStream;
 import org.fusesource.jansi.AnsiConsole;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -45,6 +66,8 @@ public class ConsoleManager {
   private static String notFoundMessage = "Command '%' not found! Try 'list-commands' to get a list of all commands!";
   private static boolean appendTime = true;
   private static final ArrayList<ConsolePreOutputModificatorInterface> preOutputModifyList = new ArrayList<>();
+  private static BasicWindow lanternaWindow = null;
+  private static int lanternaSleepBeforeScrollDown = 25;
 
   /**
    * Stop the ConsoleManager. This function also resets the most internal values including the last output array.
@@ -54,6 +77,11 @@ public class ConsoleManager {
    */
   public static synchronized void disable() throws InterruptedException, TimeoutException, IOException {
     if (enabled) {
+
+      if (lanternaWindow != null) {
+        lanternaWindow.close();
+        return;
+      }
 
       enabled = false;
       System.setOut(defaultStream);
@@ -79,6 +107,85 @@ public class ConsoleManager {
       terminal.close();
       lastOutput = new ArrayList<>();
 
+    }
+  }
+
+  public static void enableWithLanterna() throws IOException, InterruptedException, TimeoutException {
+    enableWithLanterna(() -> {});
+  }
+
+  public static synchronized void enableWithLanterna(Runnable logger) throws IOException, InterruptedException, TimeoutException {
+    if (!enabled) {
+      com.googlecode.lanterna.terminal.Terminal terminal = new DefaultTerminalFactory().createTerminal();
+      terminal.inp
+      Screen screen = new TerminalScreen(terminal);
+      screen.startScreen();
+      Panel panel = new Panel();
+      TextBox textBox = new TextBox(new TerminalSize(32767, 32767));
+      TextBox inputBox = new TextBox(new TerminalSize(32767, 1).min(new TerminalSize(32767, 1)));
+      textBox.setReadOnly(true);
+      panel.addComponent(textBox);
+      Panel inputPanel = new Panel();
+      inputPanel.setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
+      inputPanel.addComponent(new Label(prefix));
+      inputPanel.addComponent(inputBox);
+      panel.addComponent(inputPanel);
+      lanternaWindow = new BasicWindow();
+      lanternaWindow.setComponent(panel);
+      lanternaWindow.setHints(List.of(Hint.FULL_SCREEN, Hint.NO_DECORATIONS));
+      MultiWindowTextGUI gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLUE));
+      ThreadPrintStream.replaceSystemOut();
+      PipedOutputStream stream = new PipedOutputStream();
+      PipedInputStream inputStream = new PipedInputStream(stream, 2048);
+      PrintStream s = new PrintStream(stream);
+      ThreadPrintStream.setDefaultOut(s);
+      Scanner scanner = new Scanner(inputStream);
+      InterruptibleThread streamReaderThread = new InterruptibleThread(() -> {
+        try {
+          String output = scanner.nextLine();
+          for (ConsolePreOutputModificatorInterface modificator:preOutputModifyList) {
+            output = modificator.modifyOutput(output);
+          }
+          if (appendTime) output = "[" + getTimeString() + "] " + output;
+          lastOutput.add(output);
+          while (lastOutput.size() > storeLineNumber) {
+            lastOutput.remove(0);
+          }
+          StringBuilder builder = new StringBuilder();
+          for (String line:lastOutput) {
+            builder.append(line).append("\n");
+          }
+          textBox.setText(builder.toString());
+          Thread.sleep(lanternaSleepBeforeScrollDown);
+          if (inputBox.isFocused()) {
+            textBox.handleKeyStroke(new KeyStroke(KeyType.PageDown));
+          }
+          return true;
+        } catch (NoSuchElementException e) {
+          return false;
+        }
+      }, true);
+      Thread loggerThread = new Thread(() -> {
+        ((ThreadPrintStream)System.out).setThreadOut(s);
+        logger.run();
+      });
+      loggerThread.start();
+      enabled = true;
+      gui.addWindowAndWait(lanternaWindow);
+      screen.stopScreen();
+      loggerThread.interrupt();
+      int timeout = 0;
+      while (loggerThread.isAlive()) {
+        timeout++;
+        if (timeout > 100) {
+          throw new TimeoutException("Logger thread is not shutting down after interruption.");
+        }
+        Thread.sleep(100);
+      }
+      streamReaderThread.getThread().interrupt();
+      stream.write("\n---EOF---\n".getBytes(StandardCharsets.UTF_8));
+      lanternaWindow = null;
+      enabled = false;
     }
   }
 
