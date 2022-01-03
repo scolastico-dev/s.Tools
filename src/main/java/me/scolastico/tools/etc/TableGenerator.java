@@ -1,7 +1,6 @@
 package me.scolastico.tools.etc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,10 +95,7 @@ public class TableGenerator {
               }
               location = autoLineBreak-10+location;
               String newLine = line.substring(0, location);
-              l = newLine.length();
-              if (l > length.getOrDefault(i, 0)) {
-                length.put(i, l);
-              }
+              getLineLengthWithoutSpecialStrings(length, i, s, newLine);
               newLine = (center ? CENTER_ALIGNMENT : "") + (right ? RIGHT_ALIGNMENT : "") + newLine;
               line = line.substring(location);
               if (newLine.startsWith(" ")) newLine = newLine.substring(1);
@@ -116,13 +112,13 @@ public class TableGenerator {
             }
           }
         } else {
-          newLines.addAll(Arrays.asList(s.split("\r\n|\r|\n")));
-          if (lines < newLines.size()) lines = newLines.size();
+          for (String line : s.split("\r\n|\r|\n")) {
+            getLineLengthWithoutSpecialStrings(length, i, s, line);
+            if (lines < newLines.size()) lines = newLines.size();
+            newLines.add(line);
+          }
         }
         brokenFields.put(i, newLines);
-        if (l > length.getOrDefault(i, 0)) {
-          length.put(i, l);
-        }
       }
       for (int l = 0; l < lines; l++) {
         ArrayList<String> brokenLine = new ArrayList<>();
@@ -161,7 +157,7 @@ public class TableGenerator {
         boolean center = s.startsWith(CENTER_ALIGNMENT);
         boolean right = s.startsWith(RIGHT_ALIGNMENT);
         s = s.replaceAll(CENTER_ALIGNMENT, "").replaceAll(RIGHT_ALIGNMENT, "");
-        String extraSpaces = StringUtils.repeat(this.space, length.get(i) - s.length());
+        String extraSpaces = StringUtils.repeat(this.space, length.get(i) - s.replaceAll("(\\x9B|\\x1B\\[)[0-?]*[ -/]*[@-~]", "").length());
         builder
             .append(space)
             .append(center ? extraSpaces.substring(0, extraSpaces.length()/2) : (right ? extraSpaces : ""))
@@ -192,6 +188,16 @@ public class TableGenerator {
     return result.substring(0, result.length() - System.lineSeparator().length());
   }
 
+  private void getLineLengthWithoutSpecialStrings(Map<Integer, Integer> length, int i, String s, String newLine) {
+    int l;
+    l = newLine.replaceAll("(\\x9B|\\x1B\\[)[0-?]*[ -/]*[@-~]", "").length();
+    if (s.startsWith(CENTER_ALIGNMENT)) l -= CENTER_ALIGNMENT.length();
+    if (s.startsWith(RIGHT_ALIGNMENT)) l -= RIGHT_ALIGNMENT.length();
+    if (l > length.getOrDefault(i, 0)) {
+      length.put(i, l);
+    }
+  }
+
   private void addSeparator(StringBuilder builder, Map<Integer, Integer> length, Character cornerLeft, Character interception, Character cornerRight) {
     builder
         .append(boarderColorPrefix)
@@ -208,6 +214,17 @@ public class TableGenerator {
         .append(System.lineSeparator());
   }
 
+  /**
+   * Get the character for the vertical section of the boarder:
+   * <pre>
+   *  ┌──┬──┐
+   *  │  │ [│] &#60;- this section
+   *  ├──┼──┤
+   *  │  │  │
+   *  └──┴──┘
+   * </pre>
+   * @return
+   */
   public Character getBorderVertical() {
     return borderVertical;
   }

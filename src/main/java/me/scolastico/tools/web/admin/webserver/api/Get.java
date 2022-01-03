@@ -38,7 +38,7 @@ public class Get implements SimpleWebsiteInterface {
       }
       HashMap<String, Object> ret = new HashMap<>();
       ret.put("status", "ok");
-      ret.put("output", ConsoleManager.getLastOutput());
+      ret.put("output", ConsoleManager.getLastLogLines());
       return new Pair<>(200, gson.toJson(ret));
     } catch (Exception e) {
       ErrorHandler.handle(e);
