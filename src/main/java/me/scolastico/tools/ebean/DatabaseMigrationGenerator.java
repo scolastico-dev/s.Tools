@@ -1,7 +1,7 @@
 package me.scolastico.tools.ebean;
 
-import io.ebean.dbmigration.DbMigration;
 import io.ebean.annotation.Platform;
+import io.ebean.dbmigration.DbMigration;
 import java.io.IOException;
 
 /**

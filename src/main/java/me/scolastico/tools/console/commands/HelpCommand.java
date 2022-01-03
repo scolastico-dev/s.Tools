@@ -10,7 +10,7 @@ import picocli.CommandLine.Command;
 
 @Command(
     name = "help",
-    description = {"List all available commands or shows the help page of a specific command."},
+    description = {"List all available commands."},
     mixinStandardHelpOptions = true,
     helpCommand = true,
     version = {"1.0.0"}
