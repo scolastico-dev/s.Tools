@@ -1,359 +1,321 @@
 package me.scolastico.tools.console;
 
-import static org.fusesource.jansi.Ansi.ansi;
-
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
-import org.fusesource.jansi.AnsiConsole;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import me.scolastico.tools.console.commands.ClearScreenCommand;
+import me.scolastico.tools.console.commands.ExitCommand;
+import me.scolastico.tools.console.commands.HeadCommand;
+import me.scolastico.tools.console.commands.HelpCommand;
+import me.scolastico.tools.console.commands.StatusCommand;
+import me.scolastico.tools.etc.StackTraceRedirectionPrintStream;
+import me.scolastico.tools.handler.ErrorHandler;
+import org.fusesource.jansi.Ansi;
+import org.jline.console.SystemRegistry;
+import org.jline.console.impl.SystemRegistryImpl;
+import org.jline.console.impl.SystemRegistryImpl.UnknownCommandException;
+import org.jline.keymap.KeyMap;
+import org.jline.reader.Binding;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.MaskingCallback;
+import org.jline.reader.Parser;
+import org.jline.reader.Reference;
+import org.jline.reader.UserInterruptException;
+import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.widget.TailTipWidgets;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.UnmatchedArgumentException;
+import picocli.shell.jline3.PicocliCommands;
+import picocli.shell.jline3.PicocliCommands.PicocliCommandsFactory;
 
-/**
- * ConsoleManager for easy creating of console application which looks like a normal console window.
- * Also protects input from being overwritten by the output.
- * Only works with LINUX and WINDOWS. Known problems with IDE consoles! https://go.scolasti.co/ansiproblems
- */
 public class ConsoleManager {
 
-  private static boolean enabled = false;
-  private static ArrayList<String> lastOutput = new ArrayList<>();
-  private static int storeLineNumber = 1024;
-  private static PrintStream defaultStream = null;
-  private static PrintStream defaultErrStream = null;
-  private static Thread outputThread = null;
-  private static Thread inputThread = null;
-  private static PipedInputStream in = null;
-  private static String prefix = "> ";
-  private static final HashMap<String, Callable<Integer>> commands = new HashMap<>();
-  private static final char backspace = (char) 8;
-  private static Terminal terminal = null;
-  private static boolean registerDefaults = true;
-  private static StringBuilder currentInputLine = new StringBuilder();
-  private static String notFoundMessage = "Command '%' not found! Try 'list-commands' to get a list of all commands!";
-  private static boolean appendTime = true;
-  private static final ArrayList<ConsolePreOutputModificatorInterface> preOutputModifyList = new ArrayList<>();
+  private static String INPUT_PREFIX = Ansi.ansi().fgGreen().a("prompt> ").reset().toString();
+  private static int MAX_TAB_COMPLETE_SIZE = 50;
+  private static Callable<String> OUTPUT_PREFIX = null;
+  private static boolean OUTPUT_PREFIX_TIME = true;
+  private static SystemRegistry SYSTEM_REGISTRY = null;
+  private static CommandLine COMMAND_LINE = null;
+  private static Terminal TERMINAL = null;
+  private static final List<String> CONSOLE_LOG_LINES = new ArrayList<>();
+  private static Integer MAX_CONSOLE_LOG_LINES = 4096;
+  private static boolean ENABLED = false;
+  private static LineReader READER = null;
+  private static Consumer<Object> HELP_PAGE_RENDERER = new HelpCommand();
 
-  /**
-   * Stop the ConsoleManager. This function also resets the most internal values including the last output array.
-   * @throws InterruptedException InterruptedException from Thread.sleep() while waiting for the thread shutdown.
-   * @throws TimeoutException If the threads are not stopping this exception will be triggered after 10 seconds.
-   * @throws IOException IOExceptions from the System.out and System.in read/write actions.
-   */
-  public static synchronized void disable() throws InterruptedException, TimeoutException, IOException {
-    if (enabled) {
+  private static final List<Object> COMMANDS = new ArrayList<>(){{
+    add(HELP_PAGE_RENDERER);
+    add(new ExitCommand());
+    add(new ClearScreenCommand());
+    add(new StatusCommand());
+  }};
 
-      enabled = false;
-      System.setOut(defaultStream);
-      if (defaultErrStream != null) {
-        System.setErr(defaultStream);
-        defaultErrStream = null;
+  public static synchronized void enable() throws IOException {
+    if (!ENABLED) {
+
+      // Initialize CommandLine
+      Supplier<Path> workDir = () -> Paths.get(System.getProperty("user.dir"));
+      HeadCommand commands = new HeadCommand();
+      PicocliCommandsFactory factory = new PicocliCommandsFactory();
+      COMMAND_LINE = new CommandLine(commands, factory);
+      PicocliCommands picocliCommands = new PicocliCommands(COMMAND_LINE);
+      Parser parser = new DefaultParser();
+      TERMINAL = TerminalBuilder.builder().build();
+      SYSTEM_REGISTRY = new SystemRegistryImpl(parser, TERMINAL, workDir, null);
+      SYSTEM_REGISTRY.setCommandRegistries(picocliCommands);
+      READER = LineReaderBuilder.builder()
+          .terminal(TERMINAL)
+          .completer(SYSTEM_REGISTRY.completer())
+          .parser(parser)
+          .variable(LineReader.LIST_MAX, MAX_TAB_COMPLETE_SIZE)
+          .build();
+      factory.setTerminal(TERMINAL);
+      TailTipWidgets widgets = new TailTipWidgets(READER, SYSTEM_REGISTRY::commandDescription, 5, TailTipWidgets.TipType.COMPLETER);
+      widgets.enable();
+      KeyMap<Binding> keyMap = READER.getKeyMaps().get("main");
+      keyMap.bind(new Reference("tailtip-toggle"), KeyMap.alt("s"));
+
+      // Add commands
+      for (Object o : COMMANDS) {
+        COMMAND_LINE.addSubcommand(o);
       }
 
-      int timeOut = 0;
-      while (
-          outputThread != null &&
-          inputThread != null &&
-          outputThread.isAlive() &&
-          inputThread.isAlive()
-      ) {
-        Thread.sleep(50);
-        timeOut++;
-        if (timeOut >= 200) {
-          throw new TimeoutException("The output and input threads are still running and not shutting down.");
-        }
-      }
+      // Generate new System.out
+      PipedOutputStream outOut = new PipedOutputStream();
+      PipedInputStream outIn = new PipedInputStream(outOut, 65536);
+      PrintStream newOutOut = new PrintStream(outOut);
+      Scanner outScanner = new Scanner(outIn);
+      PrintStream inStream = new StackTraceRedirectionPrintStream(
+          newOutOut,
+          System.out,
+          "org.jline.reader.LineReader"
+      );
 
-      terminal.close();
-      lastOutput = new ArrayList<>();
+      // Generate new System.err
+      PipedOutputStream errOut = new PipedOutputStream();
+      PipedInputStream errIn = new PipedInputStream(errOut, 65536);
+      PrintStream newErrOut = new PrintStream(errOut);
+      Scanner errScanner = new Scanner(errIn);
+      PrintStream errStream = new StackTraceRedirectionPrintStream(
+          newErrOut,
+          System.err,
+          "org.jline.reader.LineReader"
+      );
 
-    }
-  }
+      // Override PrintStreams
+      System.setOut(inStream);
+      System.setErr(errStream);
 
-  /**
-   * Start the ConsoleManager with daemon threads.
-   * @throws IOException IOExceptions from the System.out and System.in read/write actions.
-   */
-  public static void enable() throws IOException {
-    enable(true);
-  }
-
-  /**
-   * Start the ConsoleManager.
-   * @param daemon Start the threads as daemon's? Default is true.
-   * @throws IOException IOExceptions from the System.out and System.in read/write actions.
-   */
-  public static void enable(boolean daemon) throws IOException {
-    enable(daemon, false);
-  }
-
-  /**
-   * Start the ConsoleManager.
-   * @param daemon Start the threads as daemon's? Default is true.
-   * @param alsoErrStream Also care about the error stream? Default is false.
-   * @throws IOException IOExceptions from the System.out and System.in read/write actions.
-   */
-  public static synchronized void enable(boolean daemon, boolean alsoErrStream) throws IOException {
-    if (!enabled && !ConsoleLoadingAnimation.isEnabled()) {
-
-      if (registerDefaults) {
-        if (!commands.containsKey("list-commands")) {
-          registerCommand(new ListCommandsCommand());
-        }
-        if (!commands.containsKey("exit")) {
-          registerCommand(new ExitCommand());
-        }
-      }
-
-      enabled = true;
-
-      if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
-      defaultStream = System.out;
-      if (alsoErrStream) defaultErrStream = System.err;
-      PipedOutputStream out = new PipedOutputStream();
-      in = new PipedInputStream(out, 2048);
-
-      System.setOut(null);
-      terminal = TerminalBuilder.builder().jna(true).system(true).build();
-      terminal.enterRawMode();
-      PrintStream newOut = new PrintStream(out);
-      System.setOut(newOut);
-      if (alsoErrStream) System.setErr(new PrintStream(newOut));
-
-      defaultStream.print(ansi().bold().a(prefix).reset());
-
-      outputThread = new Thread(new Runnable() {
+      // Read from PrintStreams
+      new Timer().scheduleAtFixedRate(new TimerTask() {
         @Override
         public void run() {
-          while(enabled) {
-            try {
-              Scanner scanner = new Scanner(in);
-              while (enabled) {
-                String output = scanner.nextLine();
-                for (ConsolePreOutputModificatorInterface modificator:preOutputModifyList) {
-                  output = modificator.modifyOutput(output);
-                }
-                if (appendTime) output = "[" + getTimeString() + "] " + output;
-                defaultStream.println();
-                defaultStream.print(ansi().cursorUpLine().a("\033[1L").a(output).cursorDownLine().a(prefix).a(currentInputLine.toString()));
-                lastOutput.add(output);
-                while (lastOutput.size() > storeLineNumber) {
-                  lastOutput.remove(0);
-                }
-              }
-            } catch (NoSuchElementException ignored) {}
-          }
-        }
-      });
-
-      inputThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          while (enabled) {
-            try {
-              char c = (char) terminal.reader().read();
-              if (!String.valueOf(c).matches(".")) {
-                ArrayList<String> args = new ArrayList<>(Arrays.asList(currentInputLine.toString().split(" ")));
-                currentInputLine = new StringBuilder();
-                String commandName = args.get(0);
-                args.remove(0);
-                defaultStream.println();
-                defaultStream.print(prefix);
-                if (commands.containsKey(commandName)) {
-                  int result;
-                  if (args.size() > 0) {
-                    result = new CommandLine(commands.get(commandName).getClass()).execute(args.toArray(new String[0]));
-                  } else {
-                    result = new CommandLine(commands.get(commandName).getClass()).execute();
-                  }
-                } else if (notFoundMessage != null) {
-                  System.out.println(ansi().fgRed().a(notFoundMessage.replaceAll("%", commandName)).reset());
-                }
-              } else {
-                int currentLength = prefix.length()+currentInputLine.length();
-                if (c == backspace) {
-                  if (currentInputLine.length() > 0) {
-                    currentInputLine.deleteCharAt(currentInputLine.length()-1);
-                    defaultStream.print(backspace + " ");
-                  }
-                } else {
-                  currentInputLine.append(c);
-                }
-                defaultStream.print(Character.toString(backspace).repeat(currentLength) + prefix + currentInputLine.toString());
-              }
-            } catch (IOException e) {
-              e.printStackTrace();
+          try {
+            while (outScanner.hasNextLine()) {
+              String nextLine = outScanner.nextLine();
+              print(nextLine, READER);
+              addLineToLog(nextLine);
             }
+            while (errScanner.hasNextLine()) {
+              String nextLine = errScanner.nextLine();
+              print(nextLine, READER);
+              addLineToLog(nextLine);
+            }
+          } catch (Exception e) {
+            ErrorHandler.enableErrorLogFile();
+            ErrorHandler.handle(e);
           }
         }
-      });
+      }, 5, 5);
 
-      outputThread.setDaemon(daemon);
-      outputThread.start();
-
-      inputThread.setDaemon(daemon);
-      inputThread.start();
+      new Thread(() -> {
+        while (true) {
+          String command = "";
+          try {
+            SYSTEM_REGISTRY.cleanUp();
+            command = READER.readLine(INPUT_PREFIX, null, (MaskingCallback) null, null);
+            if (
+                command.equalsIgnoreCase("HELP")
+                || command.toUpperCase().startsWith("HELP ")
+                || command.equalsIgnoreCase("EXIT")
+                || command.toUpperCase().startsWith("EXIT ")
+            ) {
+              COMMAND_LINE.execute(command.split(" "));
+            } else SYSTEM_REGISTRY.execute(command);
+          } catch (UserInterruptException ignored) {
+          } catch (UnmatchedArgumentException | IllegalArgumentException e) {
+            Object c = null;
+            for (Object o : COMMANDS) {
+              String cmd = command.split(" ")[0];
+              Command annotation = o.getClass().getAnnotation(Command.class);
+              if (annotation.name().equalsIgnoreCase(cmd)) {
+                c = o;
+                break;
+              }
+              for (String alias : annotation.aliases()) {
+                if (alias.equalsIgnoreCase(cmd)) {
+                  c = o;
+                  break;
+                }
+              }
+              if (c != null) break;
+            }
+            if (c == null) {
+              ErrorHandler.handle(
+                  new InvalidClassException(
+                      "An IllegalArgumentException could not find its help page for the command '" + command + "'."
+                  )
+              );
+            } else {
+              for (String line : HelpCommand.generateHelpPage(c)) print(line, READER);
+            }
+          } catch (UnknownCommandException e) {
+            print(Ansi.ansi()
+                .fgRed()
+                .a("Command '")
+                .fgBrightRed()
+                .a(command)
+                .fgRed()
+                .a("' not found.")
+                .reset()
+                .toString(),
+                READER
+            );
+          } catch (EndOfFileException e) {
+            System.exit(1);
+            return;
+          } catch (Exception e) {
+            ErrorHandler.handleFatal(e);
+          }
+        }
+      }).start();
+      ENABLED = true;
     }
   }
 
-  /**
-   * Execute a command manually.
-   * @param args Arguments with command at position 0.
-   * @return Status code from command or 404 if command not found.
-   */
-  public static int executeCommand(String[] args) {
-    ArrayList<String> argsList = new ArrayList<>(Arrays.asList(args));
-    String command = argsList.get(0);
-    argsList.remove(0);
-    if (argsList.size() > 0) {
-      return executeCommand(command, argsList.toArray(new String[0]));
+  public static void runCommand(String command) throws Exception {
+    if (SYSTEM_REGISTRY != null) {
+      SYSTEM_REGISTRY.execute(command);
     } else {
-      return executeCommand(command, new String[]{});
+      throw new IllegalAccessException("Cant be accessed before ConsoleManager is enabled!");
     }
   }
 
-  /**
-   * Execute a command manually.
-   * @param command The command name.
-   * @param args Arguments for the command.
-   * @return Status code from command or 404 if command not found.
-   */
-  public static int executeCommand(String command, String[] args) {
-    boolean isAnsiInstalled = AnsiConsole.isInstalled();
-    if (!isAnsiInstalled) AnsiConsole.systemInstall();
-    if (commands.containsKey(command)) {
-      int tmp = new CommandLine(commands.get(command).getClass()).execute(args);
-      if (!isAnsiInstalled) AnsiConsole.systemUninstall();
-      return tmp;
-    } else if (notFoundMessage != null) {
-      System.out.println(ansi().fgRed().a(notFoundMessage.replaceAll("%", command)).reset());
+  public static void registerCommand(Object command) {
+    if (COMMAND_LINE != null) COMMAND_LINE.addSubcommand(command);
+    COMMANDS.add(command);
+  }
+
+  private static void print(String line, LineReader reader) {
+    String prefix = "";
+    if (OUTPUT_PREFIX_TIME) {
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+      LocalDateTime now = LocalDateTime.now();
+      prefix += Ansi.ansi().a("[").fgCyan().a(dtf.format(now)).reset().a("] ");
     }
-    if (!isAnsiInstalled) AnsiConsole.systemUninstall();
-    return 404;
-  }
-
-  /**
-   * Is the ConsoleManager enabled?
-   * @return True if the ConsoleManager is enabled.
-   */
-  public static boolean isEnabled() {
-    return enabled;
-  }
-
-  /**
-   * Get the last outputted lines.
-   * @return The last lines from System.out.
-   */
-  public static String[] getLastOutput() {
-    return lastOutput.toArray(new String[0]);
-  }
-
-  /**
-   * Set how much lines from the output should be stored in an string array. If the max is reached old lines will be overwritten.
-   * @param storeLineNumber Default is 1024.
-   */
-  public static void setStoreLineNumber(int storeLineNumber) {
-    ConsoleManager.storeLineNumber = storeLineNumber;
-  }
-
-  /**
-   * Should the default commands are registered if no command with the same name is already registered?
-   * @param registerDefaults Default is true.
-   */
-  public static void setRegisterDefaults(boolean registerDefaults) {
-    ConsoleManager.registerDefaults = registerDefaults;
-  }
-
-  /**
-   * Set the prefix for the input.
-   * @param prefix Default is "&gt; "
-   */
-  public static void setPrefix(String prefix) {
-    ConsoleManager.prefix = prefix;
-  }
-
-  /**
-   * If an command is not found will respond with this message. To disable set to NULL.
-   * @param notFoundMessage Default is "Command '%' not found! Try 'list-commands' to get a list of all commands!".
-   */
-  public static void setNotFoundMessage(String notFoundMessage) {
-    ConsoleManager.notFoundMessage = notFoundMessage;
-  }
-
-  /**
-   * Should the current time stamp be added before an output? Will use "yyyy/MM/dd HH:mm:ss" format.
-   * @param appendTime Default is true.
-   */
-  public static void setAppendTime(boolean appendTime) {
-    ConsoleManager.appendTime = appendTime;
-  }
-
-  /**
-   * Register a command. If the same command is registered twice it will overwrite the old one.
-   * The command will be defined though the Command annotation ("name" value).
-   * This guide show you how to create a command: https://picocli.info/quick-guide.html
-   * @param command Picocli callable object which will be registered as a valid command. All picocli features are available.
-   */
-  public static void registerCommand(Callable<Integer> command) {
-    String name = command.getClass().getAnnotation(Command.class).name();
-    assert !name.isEmpty();
-    commands.remove(name);
-    commands.put(name, command);
-  }
-
-  /**
-   * Default command for listing all available commands.
-   * Will be added automatically if registerDefaults is true.
-   */
-  @Command(name = "list-commands", description = "List all available commands.", version = "1.0.0")
-  public static class ListCommandsCommand implements Callable<Integer> {
-    @Override
-    public Integer call() throws Exception {
-      System.out.println("Available commands:");
-      for (String command : commands.keySet()) {
-        System.out.println(command);
+    if (OUTPUT_PREFIX != null) {
+      try {
+        prefix += OUTPUT_PREFIX.call() + " ";
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
       }
-      return 0;
+    }
+    addLineToLog(prefix + line);
+    reader.printAbove(prefix + line);
+  }
+
+  private static void addLineToLog(String line) {
+    CONSOLE_LOG_LINES.add(line);
+    if (CONSOLE_LOG_LINES.size() > MAX_CONSOLE_LOG_LINES) {
+      CONSOLE_LOG_LINES.remove(0);
     }
   }
 
-  /**
-   * Default command for exiting the software through System.exit(0).
-   * Will be added automatically if registerDefaults is true.
-   */
-  @Command(name = "exit", mixinStandardHelpOptions = true, description = "Exit the software.")
-  public static class ExitCommand implements Callable<Integer> {
-    @Override
-    public Integer call() throws Exception {
-      System.exit(0);
-      return 0;
-    }
+  public static Consumer<Object> getHelpPageRenderer() {
+    return HELP_PAGE_RENDERER;
   }
 
-  /**
-   * Add a console pre output modificator to change the output before its send to the console.
-   * @param modificator The modificator to register.
-   */
-  public static void registerPreOutputModificator(ConsolePreOutputModificatorInterface modificator) {
-    preOutputModifyList.add(modificator);
+  public static void setHelpPageRenderer(Consumer<Object> helpPageRenderer) {
+    HELP_PAGE_RENDERER = helpPageRenderer;
   }
 
-  private static String getTimeString() {
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    LocalDateTime now = LocalDateTime.now();
-    return dtf.format(now);
+  public static Object[] getCommands() {
+    return COMMANDS.toArray(new Object[0]);
+  }
+
+  public static String getInputPrefix() {
+    return INPUT_PREFIX;
+  }
+
+  public static void setInputPrefix(String inputPrefix) {
+    INPUT_PREFIX = inputPrefix;
+  }
+
+  public static int getMaxTabCompleteSize() {
+    return MAX_TAB_COMPLETE_SIZE;
+  }
+
+  public static void setMaxTabCompleteSize(int maxTabCompleteSize) {
+    MAX_TAB_COMPLETE_SIZE = maxTabCompleteSize;
+  }
+
+  public static Callable<String> getOutputPrefix() {
+    return OUTPUT_PREFIX;
+  }
+
+  public static void setOutputPrefix(Callable<String> outputPrefix) {
+    OUTPUT_PREFIX = outputPrefix;
+  }
+
+  public static boolean isOutputPrefixTime() {
+    return OUTPUT_PREFIX_TIME;
+  }
+
+  public static void setOutputPrefixTime(boolean outputPrefixTime) {
+    OUTPUT_PREFIX_TIME = outputPrefixTime;
+  }
+
+  public static LineReader getReader() {
+    return READER;
+  }
+
+  public static Integer getMaxConsoleLogLines() {
+    return MAX_CONSOLE_LOG_LINES;
+  }
+
+  public static void setMaxConsoleLogLines(Integer maxConsoleLogLines) {
+    MAX_CONSOLE_LOG_LINES = maxConsoleLogLines;
+  }
+
+  public static Terminal getTerminal() {
+    return TERMINAL;
+  }
+
+  public static String[] getLastLogLines() {
+    return CONSOLE_LOG_LINES.toArray(new String[0]);
+  }
+
+  public static boolean isEnabled() {
+    return ENABLED;
   }
 
 }

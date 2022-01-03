@@ -45,7 +45,7 @@ public class Put implements SimpleWebsiteInterface {
         return new Pair<>(403, "{\"status\":\"error\",\"error\":\"no permission\"}");
       }
       System.out.println(user + "@ap -> " + data.getCommand());
-      ConsoleManager.executeCommand(args);
+      ConsoleManager.runCommand(data.getCommand());
       return new Pair<>(200, "{\"status\":\"ok\"}");
     } catch (Exception e) {
       ErrorHandler.handle(e);
