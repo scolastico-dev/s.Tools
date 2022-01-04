@@ -14,7 +14,7 @@ public class ConsoleLoadingAnimation {
 
   private static boolean enabled = false;
   private static Thread thread = null;
-  private static char[] animation = {'⣾','⣽','⣻','⢿','⡿','⣟','⣯','⣷'};
+  private static char[] animation = {'/','-','\\','|'};
   private static int step = 0;
   private static int speed = 25;
   private static PrintStream defaultStream;

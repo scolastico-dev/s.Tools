@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.util.ArrayList;
 import java.util.List;
 import me.scolastico.tools.simplified.URLCoder;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Set and get cookies from an HttpExchange.

@@ -28,7 +28,7 @@ import me.scolastico.tools.web.admin.webserver.api.Logout;
 import me.scolastico.tools.web.admin.webserver.api.Put;
 import me.scolastico.tools.web.admin.webserver.api.Status;
 import me.scolastico.tools.web.exceptions.WebServerRegistrationException;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Admin Panel: A simple solution for web based admin actions for an application.

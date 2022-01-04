@@ -1,7 +1,6 @@
 package me.scolastico.tools.routine;
 
 import java.util.HashMap;
-import javax.validation.constraints.NotNull;
 
 /**
  * A data holder for the routines module. Is required as a return value in the run function of a routine instance.
@@ -42,7 +41,7 @@ public class RoutineAnswer {
    * The values that were not set were reset to their standard. (See description of the variables.)
    * @param objectMap The objectMap which is transmitted to the next function in the routine.
    */
-  public RoutineAnswer(@NotNull HashMap<String, Object> objectMap) {
+  public RoutineAnswer(HashMap<String, Object> objectMap) {
     this.objectMap = objectMap;
     skippedRoutine = null;
     errorMessage = null;
@@ -55,7 +54,7 @@ public class RoutineAnswer {
    * @param objectMap
    * @param skippedRoutine
    */
-  public RoutineAnswer(@NotNull HashMap<String, Object> objectMap, @NotNull Routine[] skippedRoutine) {
+  public RoutineAnswer(HashMap<String, Object> objectMap, Routine[] skippedRoutine) {
     this.objectMap = objectMap;
     if (skippedRoutine.length > 0) {
       this.skippedRoutine = skippedRoutine;
@@ -84,7 +83,7 @@ public class RoutineAnswer {
    * @param stop
    * @param errorMessage
    */
-  public RoutineAnswer(boolean stop, @NotNull String errorMessage) {
+  public RoutineAnswer(boolean stop, String errorMessage) {
     this.stop = stop;
     this.errorMessage = errorMessage;
     objectMap = new HashMap<>();
