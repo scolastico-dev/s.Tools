@@ -117,7 +117,7 @@ dependencies {
     implementation("com.h2database:h2:1.4.190")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
-    implementation("info.picocli:picocli-shell-jline3:4.6.2")
+    implementation("info.picocli:picocli-shell-jline3:4.6.3")
     implementation("org.jline:jline:3.21.0")
     implementation("org.jline:jline-console:3.21.0")
     implementation("commons-codec:commons-codec:1.15")
