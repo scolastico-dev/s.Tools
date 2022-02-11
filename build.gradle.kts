@@ -115,7 +115,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.3.1")
     implementation("com.oracle.database.jdbc:ojdbc10:19.12.0.0")
     implementation("com.h2database:h2:1.4.190")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
     implementation("info.picocli:picocli-shell-jline3:4.6.2")
     implementation("org.jline:jline:3.21.0")
