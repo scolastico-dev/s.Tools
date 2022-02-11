@@ -127,7 +127,6 @@ jobs:
           name: builded-repo
           path: ${{ github.workspace }}
   test:
-    if: github.event_name != 'schedule'
     name: Test
     runs-on: ubuntu-20.04
     needs: Build
@@ -214,6 +213,32 @@ jobs:
         with:
           files: docs/
           dest: docs.zip
+      - uses: pozetroninc/github-action-get-latest-release@master
+        id: version
+        name: Get latest version name from GitHub
+        with:
+          repository: scolastico/s.Tools
+          excludes: draft
+      - name: Set version in build.gradle.kts
+        uses: datamonsters/replace-action@v2
+        with:
+          files: pom.xml
+          replacements: dev-snapshot=${{ steps.version.outputs.release }}
+      - name: Create PGP key file
+        env:
+          pgp: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: echo "$pgp" > pgp.key
+      - name: Add sonatype credentials to configuration
+        run: |
+          echo VERSION_NAME=${{ steps.version.outputs.release }} >> gradle.properties
+          echo mavenCentralUsername=${{ secrets.USERNAME }} >> gradle.properties
+          echo mavenCentralPassword=${{ secrets.PASSWORD }} >> gradle.properties
+          echo signing.password=${{ secrets.GPG_PASSPHRASE }} >> gradle.properties
+          echo signing.secretKeyRingFile=pgp.key >> gradle.properties
+      - name: Upload to release to maven central
+        run: |
+          ./gradlew publish --no-daemon --no-parallel
+          ./gradlew closeAndReleaseRepository
       - name: Upload docs to release
         uses: svenstaro/upload-release-action@v2
         with:

@@ -1,10 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.vanniktech.maven.publish.MavenPublishPluginExtension
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("org.jetbrains.dokka") version "1.6.0"
     kotlin("jvm") version "1.6.0"
-    application
 }
 
 group = "me.scolastico"
@@ -29,10 +30,20 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.0")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
+    }
+}
+
+allprojects {
+    pluginManager.withPlugin("com.vanniktech.maven.publish") {
+        extensions.getByType(MavenPublishPluginExtension::class.java).apply {
+            sonatypeHost = SonatypeHost.S01
+        }
     }
 }
 
 apply(plugin="org.jetbrains.dokka")
+apply(plugin="com.vanniktech.maven.publish")
 
 tasks {
     compileJava {
@@ -59,6 +70,7 @@ tasks {
 detekt {
     buildUponDefaultConfig = true
     allRules = false
+    config = files("detekt.yml")
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
@@ -77,9 +89,9 @@ tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configure
 }
 
 dependencies {
-    implementation("io.leego:banana:2.1.0")
     testImplementation(kotlin("test"))
-    implementation("io.sentry:sentry:5.5.0")
+    implementation("io.leego:banana:2.1.0")
+    implementation("io.sentry:sentry:5.6.1")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.google.code.gson:gson:2.8.9")
@@ -92,8 +104,8 @@ dependencies {
     implementation("com.kosprov.jargon2:jargon2-api:1.1.1")
     implementation("com.kosprov.jargon2:jargon2-native-ri-backend:1.1.1")
     implementation("org.json:json:20211205")
-    implementation("io.ebean:ebean:12.14.0")
-    implementation("io.ebean:ebean-test:12.14.0")
+    implementation("io.ebean:ebean:12.15.0")
+    implementation("io.ebean:ebean-test:12.15.0")
     implementation("io.ebean:ebean-migration:12.13.0")
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.0")
     implementation("mysql:mysql-connector-java:8.0.27")
