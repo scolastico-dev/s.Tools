@@ -151,11 +151,6 @@ jobs:
         run: chmod +x ./gradlew
       - name: Test with gradle
         run: ./gradlew test
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: build/test-results/**/*.xml
   dokka:
     name: Generate Dokka
     runs-on: ubuntu-20.04
