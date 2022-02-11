@@ -1,6 +1,5 @@
 package me.scolastico.tools.simplified.rsa;
 
-import com.google.common.base.Splitter;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -12,6 +11,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import me.scolastico.tools.etc.StringSplitter;
 
 /**
  * Several conversion functions for RSA and PEM keys
@@ -27,7 +27,7 @@ public class RSAConverter {
    */
   public static String publicToPEM(PublicKey publicKey) {
     StringBuilder ret = new StringBuilder("-----BEGIN PUBLIC KEY-----\n");
-    for (String line: Splitter.fixedLength(64).split(Base64.getEncoder().encodeToString(publicKey.getEncoded()))) {
+    for (String line: StringSplitter.Companion.splitStringByLength(Base64.getEncoder().encodeToString(publicKey.getEncoded()), 64)) {
       ret.append(line).append("\n");
     }
     ret.append("-----END PUBLIC KEY-----");
@@ -41,7 +41,7 @@ public class RSAConverter {
    */
   public static String privateToPEM(PrivateKey privateKey) {
     StringBuilder ret = new StringBuilder("-----BEGIN RSA PRIVATE KEY-----\n");
-    for (String line: Splitter.fixedLength(64).split(Base64.getEncoder().encodeToString(privateKey.getEncoded()))) {
+    for (String line: StringSplitter.Companion.splitStringByLength(Base64.getEncoder().encodeToString(privateKey.getEncoded()), 64)) {
       ret.append(line).append("\n");
     }
     ret.append("-----END RSA PRIVATE KEY-----");

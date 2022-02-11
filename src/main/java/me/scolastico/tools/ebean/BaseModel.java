@@ -5,7 +5,6 @@ import io.ebean.annotation.WhenCreated;
 import io.ebean.annotation.WhenModified;
 import java.time.Instant;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
@@ -44,7 +43,7 @@ public abstract class BaseModel extends Model {
     this.modified = null;
   }
 
-  public @Nullable UUID getId() {
+  public UUID getId() {
     return id;
   }
 
@@ -52,7 +51,7 @@ public abstract class BaseModel extends Model {
     this.id = id;
   }
 
-  public @Nullable Long getVersion() {
+  public Long getVersion() {
     return version;
   }
 
@@ -60,7 +59,7 @@ public abstract class BaseModel extends Model {
     this.version = version;
   }
 
-  public @Nullable Instant getCreated() {
+  public Instant getCreated() {
     return created;
   }
 
@@ -68,7 +67,7 @@ public abstract class BaseModel extends Model {
     this.created = created;
   }
 
-  public @Nullable Instant getModified() {
+  public Instant getModified() {
     return modified;
   }
 

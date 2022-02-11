@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
@@ -184,7 +183,7 @@ public class ConfigHandler<Config> {
    *                    An folder will also be created with the project name.
    * @return An path to an folder where you can store system wide configurations.
    */
-  public static String getSystemConfigFolder(@NotNull String projectName) {
+  public static String getSystemConfigFolder(String projectName) {
     String path;
     if (SystemUtils.IS_OS_WINDOWS) {
       path = System.getenv("ProgramData") + "\\" + projectName + "\\";

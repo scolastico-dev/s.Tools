@@ -1,0 +1,7 @@
+comments:
+  DeprecatedBlockTag:
+    active: true
+  EndOfSentenceFormat:
+    endOfSentenceFormat: '([.?!][ \t\n\r\f<])|([.?!:]$)'
+  UndocumentedPublicFunction:
+    active: true
