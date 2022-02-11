@@ -219,11 +219,6 @@ jobs:
         with:
           repository: scolastico/s.Tools
           excludes: draft
-      - name: Set version in build.gradle.kts
-        uses: datamonsters/replace-action@v2
-        with:
-          files: pom.xml
-          replacements: dev-snapshot=${{ steps.version.outputs.release }}
       - name: Create PGP key file
         env:
           pgp: ${{ secrets.GPG_PRIVATE_KEY }}
