@@ -1,9 +1,7 @@
 comments:
-  DeprecatedBlockTag: true
+  DeprecatedBlockTag:
+    active: true
   EndOfSentenceFormat:
     endOfSentenceFormat: '([.?!][ \t\n\r\f<])|([.?!:]$)'
   UndocumentedPublicFunction:
-    searchInNestedClass: true
-    searchInInnerClass: true
-    searchInInnerObject: true
-    searchInInnerInterface: true
+    active: true
