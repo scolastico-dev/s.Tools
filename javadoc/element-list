@@ -1,0 +1,15 @@
+$dokka.format:javadoc-v1
+$dokka.linkExtension:html
+$dokka.location:me.scolastico.tools.etc/StringSplitter.Companion///PointingToDeclaration/me/scolastico/tools/etc/StringSplitter.Companion.html
+me.scolastico.tools.cache
+me.scolastico.tools.console
+me.scolastico.tools.console.commands
+me.scolastico.tools.dataholder
+me.scolastico.tools.ebean
+me.scolastico.tools.etc
+me.scolastico.tools.handler
+me.scolastico.tools.pairs
+me.scolastico.tools.routine
+me.scolastico.tools.simplified
+me.scolastico.tools.simplified.rsa
+
