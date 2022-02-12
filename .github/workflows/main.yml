@@ -129,7 +129,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-20.04
-    needs: Build
+    needs: build
     steps:
       - uses: actions/download-artifact@v2
         name: Download prepared repository
@@ -208,6 +208,24 @@ jobs:
         with:
           files: docs/
           dest: docs.zip
+      - name: Upload docs to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: docs.zip
+          asset_name: docs.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+      - uses: peaceiris/actions-gh-pages@v3
+        if: ${{ env.CI_DOCS_TO_GH_PAGES == 'true' }}
+        name: Update live documentation on GH pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/
+      - uses: actions/download-artifact@v2
+        name: Download builded-repo
+        with:
+          name: builded-repo
       - uses: pozetroninc/github-action-get-latest-release@master
         id: version
         name: Get latest version name from GitHub
@@ -229,20 +247,6 @@ jobs:
         run: |
           ./gradlew publish --no-daemon --no-parallel
           ./gradlew closeAndReleaseRepository
-      - name: Upload docs to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: docs.zip
-          asset_name: docs.zip
-          tag: ${{ github.ref }}
-          overwrite: true
-      - uses: peaceiris/actions-gh-pages@v3
-        if: ${{ env.CI_DOCS_TO_GH_PAGES == 'true' }}
-        name: Update live documentation on GH pages
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/
   cleanup:
     name: Cleanup
     runs-on: ubuntu-20.04
