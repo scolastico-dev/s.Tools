@@ -235,7 +235,10 @@ jobs:
           repository: scolastico/s.Tools
           excludes: draft
       - name: Create PGP key file
-        run: echo ${{ secrets.GPG_PRIVATE_KEY }} > pgp.key
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: pgp.key
+          contents: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Add sonatype credentials to configuration
         run: |
           echo VERSION_NAME=${{ steps.version.outputs.release }} >> gradle.properties
