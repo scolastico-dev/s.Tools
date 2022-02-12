@@ -237,8 +237,10 @@ jobs:
       - name: Create PGP key file
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: pgp.key
+          path: pgp.b64
           contents: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Encode PGP key file
+        run: base64 --decode pgp.b64 > pgp.key
       - name: Add sonatype credentials to configuration
         run: |
           echo VERSION_NAME=${{ steps.version.outputs.release }} >> gradle.properties
