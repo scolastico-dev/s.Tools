@@ -114,11 +114,13 @@ dependencies {
     implementation("com.microsoft.sqlserver:mssql-jdbc:9.4.1.jre11")
     implementation("org.postgresql:postgresql:42.3.1")
     implementation("com.oracle.database.jdbc:ojdbc10:19.12.0.0")
-    implementation("com.h2database:h2:1.4.190")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
     implementation("info.picocli:picocli-shell-jline3:4.6.3")
     implementation("org.jline:jline:3.21.0")
     implementation("org.jline:jline-console:3.21.0")
     implementation("commons-codec:commons-codec:1.15")
+    // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
+    // and incompatibility with eban
+    // implementation("com.h2database:h2:1.4.190")
 }
