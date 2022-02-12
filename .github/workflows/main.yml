@@ -226,6 +226,8 @@ jobs:
         name: Download builded-repo
         with:
           name: builded-repo
+      - name: Setting permissions
+        run: chmod +x ./gradlew
       - uses: pozetroninc/github-action-get-latest-release@master
         id: version
         name: Get latest version name from GitHub
