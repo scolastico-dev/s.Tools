@@ -53,7 +53,7 @@ public class DatabaseConnector {
     Class.forName("org.sqlite.JDBC");
     Class.forName("org.postgresql.Driver");
     Class.forName("oracle.jdbc.driver.OracleDriver");
-    Class.forName("org.h2.Driver");
+    // Class.forName("org.h2.Driver");
   }
 
   /**
@@ -62,6 +62,11 @@ public class DatabaseConnector {
    */
   public synchronized void connectToDatabase(DatabaseConfig config) {
     if (!started) {
+      if (config.getDatabaseType() == DataBaseType.H2) {
+        System.err.println("H2 Database is disabled because of CVE-2022-23221, CVE-2021-42392 and CVE-2021-23463.");
+        System.err.println("To get more information about that visit: https://github.com/scolastico-dev/s.Tools/issues/98");
+        return;
+      }
       LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
       Logger ebeanLogger = loggerContext.getLogger("io.ebean");
       Logger reflectionsLogger = loggerContext.getLogger("org.reflections");
