@@ -107,7 +107,7 @@ dependencies {
     implementation("io.ebean:ebean:12.15.0")
     implementation("io.ebean:ebean-test:12.15.0")
     implementation("io.ebean:ebean-migration:12.13.0")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
     implementation("mysql:mysql-connector-java:8.0.27")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.0.3")
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
