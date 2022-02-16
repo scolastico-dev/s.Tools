@@ -112,7 +112,7 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client:3.0.3")
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
     implementation("com.microsoft.sqlserver:mssql-jdbc:9.4.1.jre11")
-    implementation("org.postgresql:postgresql:42.3.1")
+    implementation("org.postgresql:postgresql:42.3.3")
     implementation("com.oracle.database.jdbc:ojdbc10:19.12.0.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
