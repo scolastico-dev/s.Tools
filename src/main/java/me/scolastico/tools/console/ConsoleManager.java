@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -24,6 +25,8 @@ import me.scolastico.tools.console.commands.HelpCommand;
 import me.scolastico.tools.console.commands.StatusCommand;
 import me.scolastico.tools.etc.StackTraceRedirectionPrintStream;
 import me.scolastico.tools.handler.ErrorHandler;
+import me.scolastico.tools.routine.Routine;
+import me.scolastico.tools.routine.RoutineManager;
 import org.fusesource.jansi.Ansi;
 import org.jline.console.SystemRegistry;
 import org.jline.console.impl.SystemRegistryImpl;
@@ -61,6 +64,7 @@ public class ConsoleManager {
   private static boolean ENABLED = false;
   private static LineReader READER = null;
   private static Consumer<Object> HELP_PAGE_RENDERER = new HelpCommand();
+  private static ArrayList<Routine> NEW_LOG_LINE_ROUTINES = new ArrayList<>();
 
   private static final List<Object> COMMANDS = new ArrayList<>(){{
     add(HELP_PAGE_RENDERER);
@@ -225,6 +229,10 @@ public class ConsoleManager {
     COMMANDS.add(command);
   }
 
+  public static void registerNewLogLineRoutine(Routine routine) {
+    NEW_LOG_LINE_ROUTINES.add(routine);
+  }
+
   private static void print(String line, LineReader reader) {
     String prefix = "";
     if (OUTPUT_PREFIX_TIME) {
@@ -244,6 +252,14 @@ public class ConsoleManager {
   }
 
   private static void addLineToLog(String line) {
+    if (NEW_LOG_LINE_ROUTINES.size() > 0) {
+      RoutineManager manager = new RoutineManager(NEW_LOG_LINE_ROUTINES);
+      HashMap<String, Object> map = new HashMap<>();
+      map.put("LINE", line);
+      map.put("line", line);
+      map.put("Line", line);
+      manager.startNotAsynchronously(map);
+    }
     CONSOLE_LOG_LINES.add(line);
     if (CONSOLE_LOG_LINES.size() > MAX_CONSOLE_LOG_LINES) {
       CONSOLE_LOG_LINES.remove(0);

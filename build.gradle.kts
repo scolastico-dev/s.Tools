@@ -90,6 +90,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configure
 
 dependencies {
     implementation("io.ktor:ktor-server-cors-jvm:2.0.0-beta-1")
+    implementation("io.ktor:ktor-server-core-jvm:2.0.0-beta-1")
     testImplementation(kotlin("test"))
     implementation("io.leego:banana:2.1.0")
     implementation("io.sentry:sentry:5.6.1")
@@ -125,6 +126,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-status-pages:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-default-headers:2.0.0-beta-1")
+    implementation("io.ktor:ktor-server-websockets:2.0.0-beta-1")
     // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
     // and incompatibility with eban
     // implementation("com.h2database:h2:1.4.190")
