@@ -54,6 +54,7 @@ export default {
       code: null,
       authenticated: false,
       bottom: true,
+      scheduler: null,
     }
   },
   fetchOnServer: false,
@@ -63,6 +64,9 @@ export default {
       .$get('console/history')
       .then((result) => {
         result.forEach((e) => parent.log(e))
+        this.scheduler = window.setInterval(() => {
+          parent.$parent.checkIfAuthenticated()
+        }, 10000)
         let newUri
         const loc = window.location
         if (loc.protocol === 'https:') {
@@ -73,13 +77,14 @@ export default {
         parent.connection.onmessage = function (event) {
           if (parent.code === null) {
             parent.code = event.data
-            parent.$axios
-              .$get('auth/live/' + event.data)
-              .catch((error) => {
-                parent.$parent.checkIfAuthenticated()
-                throw error
-              })
-          } else if (!parent.authenticated && event.data.startsWith('authenticated with user ')) {
+            parent.$axios.$get('auth/live/' + event.data).catch((error) => {
+              parent.$parent.checkIfAuthenticated()
+              throw error
+            })
+          } else if (
+            !parent.authenticated &&
+            event.data.startsWith('authenticated with user ')
+          ) {
             parent.authenticated = true
           } else {
             parent.log(event.data)
@@ -94,10 +99,14 @@ export default {
         throw error
       })
   },
-  beforeUnmount() {
+  beforeDestroy() {
     try {
       this.connection.close()
     } catch (e) {}
+    if (this.scheduler != null) {
+      clearInterval(this.scheduler)
+      this.scheduler = null
+    }
   },
   methods: {
     submit() {
@@ -128,11 +137,17 @@ export default {
           this.bottom = true
         })
       }
-      // eslint-disable-next-line no-control-regex
-      this.$refs.content.innerHTML += this.ansi(line).replaceAll(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "") + "<br>"
+      this.$refs.content.innerHTML +=
+        this.ansi(line).replaceAll(
+          // eslint-disable-next-line no-control-regex
+          /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g,
+          ''
+        ) + '<br>'
     },
     scroll(event) {
-      this.bottom = (event.target.offsetHeight + event.target.scrollTop) >= event.target.scrollHeight
+      this.bottom =
+        event.target.offsetHeight + event.target.scrollTop >=
+        event.target.scrollHeight
     },
   },
 }

@@ -11,11 +11,6 @@
       <login-component v-if="!login"></login-component>
       <console-component v-if="login"></console-component>
     </transition>
-    <div
-      class="absolute bottom-0 left-0 h-6 w-6 bg-black"
-      @click="login = !login"
-    ></div>
-    <!-- debug element -->
   </div>
 </template>
 

@@ -11,6 +11,10 @@ import me.scolastico.tools.web.admin.etc.WebsocketInstaller
 import me.scolastico.tools.web.admin.web.AdminPanelAPI
 import me.scolastico.tools.web.admin.web.AdminPanelFrontend
 import org.fusesource.jansi.Ansi
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.timerTask
 
 
 class AdminPanelInstaller private constructor() {
@@ -19,7 +23,9 @@ class AdminPanelInstaller private constructor() {
         var currentConfig: AdminPanelConfig = AdminPanelConfig();
         var configHandler: ConfigHandler<AdminPanelConfig> = ConfigHandler(currentConfig, "admin-config.json")
         val tokens: HashMap<String, String> = HashMap()
+        val tokenDate: HashMap<String, Instant> = HashMap()
         val verifier: Jargon2.Verifier = Jargon2.jargon2Verifier()
+        private var enabled = false
 
         val hasher: Jargon2.Hasher = Jargon2.jargon2Hasher()
             .type(Jargon2.Type.ARGON2d)
@@ -30,6 +36,8 @@ class AdminPanelInstaller private constructor() {
             .hashLength(16)
 
         fun install(webserver: WebserverManager, installWebsocketExtension: Boolean = true) {
+            if (enabled) return
+            enabled = true
             loadConfig()
             if (installWebsocketExtension) webserver.registerModule(WebsocketInstaller())
             webserver.registerModule(AdminPanelAPI())
@@ -42,6 +50,7 @@ class AdminPanelInstaller private constructor() {
             ConsoleManager.registerCommand(ListPermissionsCommand())
             ConsoleManager.registerCommand(ListUserCommand())
             ConsoleManager.registerNewLogLineRoutine(NewLogLineEventHandler())
+            startTimer()
         }
 
         fun loadConfig() {
@@ -59,6 +68,34 @@ class AdminPanelInstaller private constructor() {
                 .fgBright(Ansi.Color.BLACK).a("[")
                 .fgBrightMagenta().a("s.Admin")
                 .fgBright(Ansi.Color.BLACK).a("] ")
+        }
+
+        fun startTimer() {
+            Timer("s-admin-panel-token-invalidator").scheduleAtFixedRate(
+                timerTask {
+                    val toDeleteTokens = ArrayList<String>()
+                    val toDeleteUser = ArrayList<String>()
+                    for ((token,date) in tokenDate) {
+                        if (date.plusMillis(TimeUnit.HOURS.toMillis(1)).isBefore(Instant.now())) {
+                            toDeleteTokens.add(token)
+                        }
+                    }
+                    for (token in toDeleteTokens) {
+                        tokenDate.remove(token)
+                        for ((user,t) in tokens) {
+                            if (token == t) toDeleteUser.add(user)
+                        }
+                    }
+                    for (user in toDeleteUser) {
+                        tokens.remove(user)
+                        println(prefix().fgYellow()
+                            .a("The session of the user '$user' timed out.")
+                            .fgDefault())
+                    }
+                },
+                TimeUnit.SECONDS.toMillis(30),
+                TimeUnit.SECONDS.toMillis(30)
+            )
         }
     }
 }

@@ -10,6 +10,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.*
 import me.scolastico.tools.console.ConsoleManager
 import me.scolastico.tools.web.admin.AdminPanelInstaller
+import me.scolastico.tools.web.tools.JsonStatusPagesModule
 import org.slf4j.LoggerFactory
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
@@ -82,5 +83,6 @@ fun main() {
     val web = WebserverManager()
     AdminPanelInstaller.install(web)
     ConsoleManager.enable()
+    web.registerModule(JsonStatusPagesModule())
     web.start()
 }

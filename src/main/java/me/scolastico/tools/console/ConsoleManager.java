@@ -216,6 +216,14 @@ public class ConsoleManager {
 
   public static void runCommand(String command) throws Exception {
     if (SYSTEM_REGISTRY != null) {
+      if (
+          command.equalsIgnoreCase("HELP")
+              || command.toUpperCase().startsWith("HELP ")
+              || command.equalsIgnoreCase("EXIT")
+              || command.toUpperCase().startsWith("EXIT ")
+      ) {
+        COMMAND_LINE.execute(command.split(" "));
+      }
       SYSTEM_REGISTRY.execute(command);
     } else {
       throw new IllegalAccessException("Cant be accessed before ConsoleManager is enabled!");

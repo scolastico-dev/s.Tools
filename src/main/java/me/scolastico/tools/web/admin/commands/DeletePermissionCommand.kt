@@ -27,11 +27,11 @@ class DeletePermissionCommand: Runnable {
             permissions.remove(permission.lowercase())
             AdminPanelInstaller.currentConfig.permissions[user.lowercase()] = permissions
             AdminPanelInstaller.saveConfig()
-            print(AdminPanelInstaller.prefix()
-                .fgGreen().a("Removed permission '$permissions' from the user '$user'.")
+            println(AdminPanelInstaller.prefix()
+                .fgGreen().a("Removed permission '$permission' from the user '$user'.")
                 .fgDefault())
         } else {
-            print(AdminPanelInstaller.prefix()
+            println(AdminPanelInstaller.prefix()
                 .fgRed().a("This user and/or permission does not exist!")
                 .fgDefault())
         }

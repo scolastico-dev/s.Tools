@@ -21,11 +21,11 @@ class DeleteUserCommand: Runnable {
             AdminPanelInstaller.currentConfig.permissions.remove(user.lowercase())
             AdminPanelInstaller.tokens.remove(user.lowercase())
             AdminPanelInstaller.saveConfig()
-            print(AdminPanelInstaller.prefix()
+            println(AdminPanelInstaller.prefix()
                 .fgGreen().a("Removed the user '$user'.")
                 .fgDefault())
         } else {
-            print(AdminPanelInstaller.prefix()
+            println(AdminPanelInstaller.prefix()
                 .fgRed().a("This user does not exist!")
                 .fgDefault())
         }

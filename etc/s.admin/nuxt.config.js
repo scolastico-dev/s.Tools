@@ -27,11 +27,11 @@ export default {
 
   axios: {
     baseURL: '/.admin/api/',
-    withCredentials: true
+    withCredentials: true,
   },
 
   router: {
-    base: '/.admin/'
+    base: '/.admin/',
   },
 
   tailwindcss: {

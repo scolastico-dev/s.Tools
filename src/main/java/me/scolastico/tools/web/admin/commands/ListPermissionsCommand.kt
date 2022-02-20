@@ -27,23 +27,23 @@ class ListPermissionsCommand: Runnable {
             if (AdminPanelInstaller.currentConfig.user.containsKey(user!!.lowercase())) {
                 val permissions = AdminPanelInstaller.currentConfig.permissions[user]?: ArrayList()
                 if (permissions.size > 0) {
-                    print(AdminPanelInstaller.prefix()
+                    println(AdminPanelInstaller.prefix()
                         .fgGreen().a("Found ${permissions.size} permissions for the user '$user': ")
                         .fgDefault().a(permissions.joinToString(Ansi.ansi()
                             .fgYellow().a(", ").fgDefault().toString())))
                 } else {
-                    print(AdminPanelInstaller.prefix()
+                    println(AdminPanelInstaller.prefix()
                         .fgGreen().a("The user '$user' has no permissions.")
                         .fgDefault())
                 }
             } else {
-                print(AdminPanelInstaller.prefix()
+                println(AdminPanelInstaller.prefix()
                     .fgRed().a("This user does not exist!")
                     .fgDefault())
             }
         } else {
             val generator = TableGeneratorThemes.FANCY_BOARDER()
-                .setBoarderColorPrefix(Ansi.ansi().bgBright(Ansi.Color.BLACK).fgBlack().toString())
+                .setBoarderColorPrefix(Ansi.ansi().fgBright(Ansi.Color.BLACK).toString())
                 .setBoarderColorSuffix(Ansi.ansi().fgDefault().toString())
                 .setAutoLineBreak(100)
                 .addContent(
@@ -52,7 +52,10 @@ class ListPermissionsCommand: Runnable {
                         .reset().toString()
                 )
                 .addTableLineSeparator()
+            var firstLine = true
             for (user in AdminPanelInstaller.currentConfig.permissions.keys) {
+                if (!firstLine) generator.addTableLineSeparator()
+                if (firstLine) firstLine = false
                 generator.addContent(user, AdminPanelInstaller.currentConfig.permissions[user]!!.joinToString(", "))
             }
             println(generator)

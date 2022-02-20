@@ -2,6 +2,7 @@ package me.scolastico.tools.web.admin.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,6 +14,7 @@ import me.scolastico.tools.web.admin.AdminPanelInstaller
 import me.scolastico.tools.web.admin.etc.AdminPanelLoginData
 import me.scolastico.tools.web.admin.etc.AdminPanelSendCommandData
 import org.apache.commons.lang3.RandomStringUtils
+import java.time.Instant
 
 class AdminPanelAPI {
 
@@ -32,6 +34,9 @@ class AdminPanelAPI {
                             .password(data.password.toByteArray())
                             .verifyEncoded()
                     ) {
+                        println(AdminPanelInstaller.prefix().fgYellow()
+                            .a("User '${data.username.lowercase()}' logged in from '${call.request.origin.remoteHost}'.")
+                            .fgDefault())
                         var token = ""
                         do {
                             token = RandomStringUtils.randomAlphanumeric(128)
@@ -40,6 +45,7 @@ class AdminPanelAPI {
                                     AdminPanelInstaller.tokens.containsValue(token)
                         )
                         AdminPanelInstaller.tokens[data.username.lowercase()] = token
+                        AdminPanelInstaller.tokenDate[token] = Instant.now()
                         call.response.cookies.append(
                             "s-admin-auth-token",
                             token,
@@ -55,7 +61,12 @@ class AdminPanelAPI {
                 if (user != null) {
                     val token = call.request.cookies["s-admin-auth-token"]
                     if (!AdminPanelInstaller.currentConfig.staticTokens.containsValue(token)) {
-                        AdminPanelInstaller.tokens.remove(token)
+                        AdminPanelInstaller.tokenDate.remove(token)
+                        AdminPanelInstaller.tokens.remove(user)
+                        call.response.cookies.appendExpired("s-admin-auth-token")
+                        println(AdminPanelInstaller.prefix().fgYellow()
+                            .a("User '$user' logged out.")
+                            .fgDefault())
                         call.respond(HttpStatusCode.OK)
                     } else call.respond(HttpStatusCode.BadRequest)
                 } else call.respond(HttpStatusCode.Unauthorized)
@@ -92,9 +103,23 @@ class AdminPanelAPI {
                         }
                     }
                     if (hasPermission) {
-                        ConsoleManager.runCommand(data.command)
+                        println(AdminPanelInstaller.prefix().fgYellow()
+                            .a("User '$user' executed command '${data.command}'.")
+                            .fgDefault())
+                        try {
+                            ConsoleManager.runCommand(data.command)
+                        } catch (e: Throwable) {
+                            println(AdminPanelInstaller.prefix().fgRed()
+                                .a("Something went wrong while executing command '${data.command}'...")
+                                .fgDefault())
+                        }
                         call.respond(HttpStatusCode.OK)
-                    } else call.respond(HttpStatusCode.Forbidden)
+                    } else {
+                        println(AdminPanelInstaller.prefix().fgYellow()
+                            .a("User '$user' try'd to executed command '${data.command}' but hasn't enough permissions to do so.")
+                            .fgDefault())
+                        call.respond(HttpStatusCode.Forbidden)
+                    }
                 } else call.respond(HttpStatusCode.Unauthorized)
             }
             get("/.admin/api/console/history") {

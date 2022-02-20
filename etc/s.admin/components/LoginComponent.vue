@@ -17,7 +17,6 @@
           'transition-[border] duration-300': !warningU,
         }"
         @keydown="warningU = false"
-        @keydown.enter="login"
       /><br />
       <input
         id="password"
@@ -30,7 +29,6 @@
           'transition-[border] duration-300': !warningP,
         }"
         @keydown="warningP = false"
-        @keydown.enter="login"
       /><br />
       <div class="flex justify-center">
         <button

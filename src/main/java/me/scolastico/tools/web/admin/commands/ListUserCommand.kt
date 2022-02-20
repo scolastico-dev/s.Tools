@@ -16,14 +16,14 @@ class ListUserCommand: Runnable {
     override fun run() {
         val users = AdminPanelInstaller.currentConfig.user.keys
         if (users.size > 0) {
-            print(
+            println(
                 AdminPanelInstaller.prefix()
                 .fgGreen().a("Found ${users.size} users: ")
                 .fgDefault().a(users.joinToString(
                         Ansi.ansi()
                     .fgYellow().a(", ").fgDefault().toString())))
         } else {
-            print(
+            println(
                 AdminPanelInstaller.prefix()
                 .fgGreen().a("No users where found!")
                 .fgDefault())
