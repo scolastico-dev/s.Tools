@@ -1,4 +1,4 @@
-package me.scolastico.tools.web.admin
+package me.scolastico.tools.web.admin.etc
 
 import io.ktor.server.application.*
 import io.ktor.websocket.*

@@ -2,26 +2,30 @@ package me.scolastico.tools.web
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
+import io.ktor.serialization.gson.*
+import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.*
+import me.scolastico.tools.console.ConsoleManager
+import me.scolastico.tools.web.admin.AdminPanelInstaller
 import org.slf4j.LoggerFactory
-import java.util.Timer
-import kotlin.collections.HashMap
-import kotlin.concurrent.timerTask
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
 
 class WebserverManager(private val listeningPort: Int = 8080, private val listeningHost: String = "127.0.0.1") {
 
-    private val routes = ArrayList<String>()
+    private val modules = ArrayList<String>()
     private val ktorConfigObjects = HashMap<String, Any>()
     private val applicationConfigObjects = HashMap<String, Any>()
     private var server: NettyApplicationEngine? = null
+    private val defaultModule = "me.scolastico.tools.web.WebserverManager.moduleDefault"
 
     fun start():WebserverManager {
         if (server == null) {
-            applicationConfigObjects["modules"] = ConfigValueFactory.fromIterable(routes.toList())
+            if (!modules.contains(defaultModule)) modules.add(defaultModule)
+            applicationConfigObjects["modules"] = ConfigValueFactory.fromIterable(modules.toList())
             ktorConfigObjects["application"] = ConfigValueFactory.fromMap(applicationConfigObjects)
             val c = ConfigFactory.load().withValue("ktor", ConfigValueFactory.fromMap(ktorConfigObjects))
             server = embeddedServer(Netty, environment = applicationEngineEnvironment {
@@ -47,7 +51,7 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
     fun registerModule(module: Any):WebserverManager {
         for (function in module::class.declaredFunctions) {
             if (function.hasAnnotation<WebserverRegistration>()) {
-                routes.add("${module.javaClass.name}.${function.name}")
+                modules.add("${module.javaClass.name}.${function.name}")
             }
         }
         return this
@@ -63,17 +67,20 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
         return this
     }
 
+    fun Application.moduleDefault() {
+        install(ContentNegotiation) {
+            gson {
+                serializeNulls()
+                disableHtmlEscaping()
+            }
+        }
+    }
+
 }
 
 fun main() {
-    val web = WebserverManager().registerModule(FilePageHandler()).start()
-    Timer().schedule(timerTask {
-        println("stopping")
-        web.stop()
-        println("stopped")
-    }, 10000)
-    Timer().schedule(timerTask {
-        println("starting")
-        web.start()
-    }, 20000)
+    val web = WebserverManager()
+    AdminPanelInstaller.install(web)
+    ConsoleManager.enable()
+    web.start()
 }

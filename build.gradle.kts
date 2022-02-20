@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.vanniktech.maven.publish.MavenPublishPluginExtension
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
@@ -127,6 +127,8 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-default-headers:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-websockets:2.0.0-beta-1")
+    implementation("io.ktor:ktor-server-content-negotiation:2.0.0-beta-1")
+    implementation("io.ktor:ktor-serialization-gson:2.0.0-beta-1")
     // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
     // and incompatibility with eban
     // implementation("com.h2database:h2:1.4.190")

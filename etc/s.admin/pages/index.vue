@@ -1,13 +1,21 @@
 <template>
-  <div id="body-wrapper" class="flex justify-center items-center bg-gradient-to-br from-gray-700 to-gray-900 text-white" @click="login = !login">
+  <div
+    id="body-wrapper"
+    class="flex justify-center items-center bg-gradient-to-br from-gray-700 to-gray-900 text-white"
+  >
     <transition
       mode="out-in"
-      leave-active-class="animate__animated animate__fadeOut"
-      enter-active-class="animate__animated animate__fadeIn"
+      leave-active-class="animate__animated animate__fadeOut main-transition-speed"
+      enter-active-class="animate__animated animate__fadeIn main-transition-speed"
     >
-      <login-component v-if="login"></login-component>
-      <console-component v-if="!login"></console-component>
+      <login-component v-if="!login"></login-component>
+      <console-component v-if="login"></console-component>
     </transition>
+    <div
+      class="absolute bottom-0 left-0 h-6 w-6 bg-black"
+      @click="login = !login"
+    ></div>
+    <!-- debug element -->
   </div>
 </template>
 
@@ -16,8 +24,30 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      login: true,
+      login: false,
     }
+  },
+  fetchOnServer: false,
+  async fetch() {
+    await this.checkIfAuthenticated()
+  },
+  methods: {
+    async checkIfAuthenticated() {
+      await this.$axios
+        .$get('status')
+        .then(() => {
+          this.login = true
+        })
+        .catch(() => {
+          this.login = false
+        })
+    },
   },
 }
 </script>
+
+<style>
+.main-transition-speed {
+  --animate-duration: 400ms;
+}
+</style>

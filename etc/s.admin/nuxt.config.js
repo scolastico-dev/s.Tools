@@ -15,32 +15,23 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
-  css: [
-    '~assets/animate.min.css',
-    '~assets/global.css'
-  ],
+  css: ['~assets/animate.min.css', '~assets/global.css'],
 
-  plugins: [
-    '~plugins/animation-helper.js'
-  ],
+  plugins: ['~plugins/animation-helper.js'],
 
   components: true,
 
-  buildModules: [
-    '@nuxtjs/eslint-module',
-    '@nuxtjs/tailwindcss',
-  ],
+  buildModules: ['@nuxtjs/eslint-module', '@nuxtjs/tailwindcss'],
 
-  modules: [
-    '@nuxtjs/axios',
-  ],
+  modules: ['@nuxtjs/axios'],
 
   axios: {
     baseURL: '/.admin/api/',
+    withCredentials: true
   },
 
-  build: {
-    baseURL: '/.admin/',
+  router: {
+    base: '/.admin/'
   },
 
   tailwindcss: {

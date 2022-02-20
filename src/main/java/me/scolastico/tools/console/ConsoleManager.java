@@ -64,7 +64,7 @@ public class ConsoleManager {
   private static boolean ENABLED = false;
   private static LineReader READER = null;
   private static Consumer<Object> HELP_PAGE_RENDERER = new HelpCommand();
-  private static ArrayList<Routine> NEW_LOG_LINE_ROUTINES = new ArrayList<>();
+  private static final ArrayList<Routine> NEW_LOG_LINE_ROUTINES = new ArrayList<>();
 
   private static final List<Object> COMMANDS = new ArrayList<>(){{
     add(HELP_PAGE_RENDERER);
@@ -137,12 +137,10 @@ public class ConsoleManager {
             while (outScanner.hasNextLine()) {
               String nextLine = outScanner.nextLine();
               print(nextLine, READER);
-              addLineToLog(nextLine);
             }
             while (errScanner.hasNextLine()) {
               String nextLine = errScanner.nextLine();
               print(nextLine, READER);
-              addLineToLog(nextLine);
             }
           } catch (Exception e) {
             ErrorHandler.enableErrorLogFile();
