@@ -7,6 +7,9 @@ import me.scolastico.tools.web.WebserverRegistration
 
 class AdminPanelFrontend {
 
+    /**
+     * WebserverManager compatible module for installing the frontend.
+     */
     @WebserverRegistration
     fun Application.moduleAdminPanelFrontend() {
         routing {

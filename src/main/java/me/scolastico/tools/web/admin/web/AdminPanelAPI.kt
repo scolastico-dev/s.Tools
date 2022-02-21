@@ -16,16 +16,48 @@ import me.scolastico.tools.web.admin.etc.AdminPanelSendCommandData
 import org.apache.commons.lang3.RandomStringUtils
 import java.time.Instant
 
+@Suppress("TooGenericExceptionCaught", "ComplexCondition", "ComplexMethod", "ComplexMethod", "LongMethod")
 class AdminPanelAPI {
 
     companion object {
+        private const val LIVE_TOKEN_LENGTH = 16
+        private const val LOGIN_TOKEN_LENGTH = 128
+
         val connections = HashMap<String, DefaultWebSocketServerSession>()
         val users = HashMap<String, String>()
         val timeouts = HashMap<String, Instant>()
+
+        /**
+         * Internal function to get the user from a web call.
+         * @param call The web call
+         * @return The user if found, null otherwise.
+         */
+        fun getUser(call: ApplicationCall): String? {
+            val token = call.request.cookies["s-admin-auth-token"]?: ""
+            var user:String? = null
+            if (AdminPanelInstaller.currentConfig.staticTokens.containsValue(token)) {
+                for ((u,t) in AdminPanelInstaller.currentConfig.staticTokens) {
+                    if (t == token) {
+                        user = u
+                    }
+                }
+            }
+            if (AdminPanelInstaller.tokens.containsValue(token)) {
+                for ((u,t) in AdminPanelInstaller.tokens) {
+                    if (t == token) {
+                        user = u
+                    }
+                }
+            }
+            return user
+        }
     }
 
+    /**
+     * WebserverManager compatible module for installing the API of s.Admin.
+     */
     @WebserverRegistration
-    fun Application.moduleAdminPanel() {
+    fun Application.moduleAdminPanelAPI() {
         routing {
             post("/.admin/api/auth/login") {
                 val data = call.receive<AdminPanelLoginData>()
@@ -36,11 +68,12 @@ class AdminPanelAPI {
                             .verifyEncoded()
                     ) {
                         println(AdminPanelInstaller.prefix().fgYellow()
-                            .a("User '${data.username.lowercase()}' logged in from '${call.request.origin.remoteHost}'.")
+                            .a("User '${data.username.lowercase()}' logged in " +
+                                    "from '${call.request.origin.remoteHost}'.")
                             .fgDefault())
                         var token = ""
                         do {
-                            token = RandomStringUtils.randomAlphanumeric(128)
+                            token = RandomStringUtils.randomAlphanumeric(LOGIN_TOKEN_LENGTH)
                         } while (
                             AdminPanelInstaller.currentConfig.staticTokens.containsValue(token) ||
                                     AdminPanelInstaller.tokens.containsValue(token)
@@ -95,22 +128,15 @@ class AdminPanelAPI {
                 if (user != null) {
                     var hasPermission = false
                     for (permission in AdminPanelInstaller.currentConfig.permissions[user]?: ArrayList()) {
-                        if (permission == "*") {
+                        val allowAll = permission == "*"
+                        val isExactCommand = permission == cmd
+                        val startsWith = permission.startsWith("*") &&
+                                cmd.endsWith(permission.replaceFirst("*", ""))
+                        val endsWith = permission.endsWith("*") &&
+                                cmd.startsWith(permission.substring(0, permission.length - 1))
+                        if (allowAll || isExactCommand || startsWith || endsWith) {
                             hasPermission = true
                             break
-                        } else if (permission == cmd) {
-                            hasPermission = true
-                            break
-                        } else if (permission.startsWith("*")) {
-                            if (cmd.endsWith(permission.replaceFirst("*", ""))) {
-                                hasPermission = true
-                                break
-                            }
-                        } else if (permission.endsWith("*")) {
-                            if (cmd.startsWith(permission.substring(0, permission.length - 1))) {
-                                hasPermission = true
-                                break
-                            }
                         }
                     }
                     if (hasPermission) {
@@ -119,7 +145,7 @@ class AdminPanelAPI {
                             .fgDefault())
                         try {
                             ConsoleManager.runCommand(data.command)
-                        } catch (e: Throwable) {
+                        } catch (ignored: Throwable) {
                             println(AdminPanelInstaller.prefix().fgRed()
                                 .a("Something went wrong while executing command '${data.command}'...")
                                 .fgDefault())
@@ -127,7 +153,8 @@ class AdminPanelAPI {
                         call.respond(HttpStatusCode.OK)
                     } else {
                         println(AdminPanelInstaller.prefix().fgYellow()
-                            .a("User '$user' try'd to executed command '${data.command}' but hasn't enough permissions to do so.")
+                            .a("User '$user' try'd to executed command '${data.command}' " +
+                                    "but hasn't enough permissions to do so.")
                             .fgDefault())
                         call.respond(HttpStatusCode.Forbidden)
                     }
@@ -153,7 +180,7 @@ class AdminPanelAPI {
             webSocket("/.admin/api/console/live") {
                 var id = ""
                 do {
-                    id = RandomStringUtils.randomAlphanumeric(16)
+                    id = RandomStringUtils.randomAlphanumeric(LIVE_TOKEN_LENGTH)
                 } while (connections.containsKey(id))
                 connections[id] = this
                 timeouts[id] = Instant.now()
@@ -163,26 +190,6 @@ class AdminPanelAPI {
                 }
             }
         }
-    }
-
-    fun getUser(call: ApplicationCall): String? {
-        val token = call.request.cookies["s-admin-auth-token"]?: ""
-        var user:String? = null
-        if (AdminPanelInstaller.currentConfig.staticTokens.containsValue(token)) {
-            for ((u,t) in AdminPanelInstaller.currentConfig.staticTokens) {
-                if (t == token) {
-                    user = u
-                }
-            }
-        }
-        if (AdminPanelInstaller.tokens.containsValue(token)) {
-            for ((u,t) in AdminPanelInstaller.tokens) {
-                if (t == token) {
-                    user = u
-                }
-            }
-        }
-        return user
     }
 
 }

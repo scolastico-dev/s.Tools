@@ -5,3 +5,8 @@ comments:
     endOfSentenceFormat: '([.?!][ \t\n\r\f<])|([.?!:]$)'
   UndocumentedPublicFunction:
     active: true
+style:
+  WildcardImport:
+    excludeImports:
+      - java.util.*
+      - io.ktor.*

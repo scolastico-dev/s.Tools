@@ -8,9 +8,6 @@ import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.*
-import me.scolastico.tools.console.ConsoleManager
-import me.scolastico.tools.web.admin.AdminPanelInstaller
-import me.scolastico.tools.web.tools.JsonStatusPagesModule
 import org.slf4j.LoggerFactory
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
@@ -23,6 +20,10 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
     private var server: NettyApplicationEngine? = null
     private val defaultModule = "me.scolastico.tools.web.WebserverManager.moduleDefault"
 
+    /**
+     * Start the WebserverManager.
+     * @return self
+     */
     fun start():WebserverManager {
         if (server == null) {
             if (!modules.contains(defaultModule)) modules.add(defaultModule)
@@ -41,6 +42,10 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
         return this
     }
 
+    /**
+     * Stop the WebserverManager.
+     * @return self
+     */
     fun stop(gracePeriodMillis: Long = 1000, timeoutMillis: Long = 5000):WebserverManager {
         if (server != null) {
             server!!.stop(gracePeriodMillis, timeoutMillis)
@@ -49,6 +54,11 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
         return this
     }
 
+    /**
+     * Register and module into the webserver manager.
+     * @param module Object containing the module with the WebserverRegistration annotation.
+     * @return self
+     */
     fun registerModule(module: Any):WebserverManager {
         for (function in module::class.declaredFunctions) {
             if (function.hasAnnotation<WebserverRegistration>()) {
@@ -58,16 +68,29 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
         return this
     }
 
+    /**
+     * Add a 'ktor' configuration object to the webserver.
+     * @param key The key of the configuration object.
+     * @param value The configuration object.
+     */
     fun addKtorConfigObject(key: String, value: Any):WebserverManager {
         ktorConfigObjects[key] = value
         return this
     }
 
+    /**
+     * Add a 'application' configuration object to the webserver.
+     * @param key The key of the configuration object.
+     * @param value The configuration object.
+     */
     fun addApplicationConfigObject(key: String, value: Any):WebserverManager {
         applicationConfigObjects[key] = value
         return this
     }
 
+    /**
+     * The default module which will always be included in the webserver.
+     */
     fun Application.moduleDefault() {
         install(ContentNegotiation) {
             gson {
@@ -77,12 +100,4 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
         }
     }
 
-}
-
-fun main() {
-    val web = WebserverManager()
-    AdminPanelInstaller.install(web)
-    ConsoleManager.enable()
-    web.registerModule(JsonStatusPagesModule())
-    web.start()
 }

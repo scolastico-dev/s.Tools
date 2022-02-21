@@ -42,6 +42,12 @@ class CreateUserCommand: Runnable {
     }
 
     companion object {
+        /**
+         * Create a new user or override the password of an existing user.
+         * The password will automatically be encrypted with argon2d
+         * @param user The username.
+         * @param password The password.
+         */
         fun createUser(user: String, password: String) {
             var p = password
             if (password.startsWith("file@")) {

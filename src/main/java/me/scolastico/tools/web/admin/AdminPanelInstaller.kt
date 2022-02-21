@@ -1,3 +1,4 @@
+@file:Suppress("WildcardImport")
 package me.scolastico.tools.web.admin
 
 import com.kosprov.jargon2.api.Jargon2
@@ -22,6 +23,8 @@ import kotlin.concurrent.timerTask
 class AdminPanelInstaller private constructor() {
     companion object {
 
+        private const val CLEANUP_SCHEDULER_SECONDS: Long = 30;
+
         var currentConfig: AdminPanelConfig = AdminPanelConfig();
         var configHandler: ConfigHandler<AdminPanelConfig> = ConfigHandler(currentConfig, "admin-config.json")
         val tokens: HashMap<String, String> = HashMap()
@@ -37,6 +40,11 @@ class AdminPanelInstaller private constructor() {
             .saltLength(16)
             .hashLength(16)
 
+        /**
+         * Install the s.Admin module in the ConsoleManager nad a WebserverManager.
+         * @param webserver The webserver where to install the module.
+         * @param installWebsocketExtension Should the ktor websocket extension be installed automatically?
+         */
         fun install(webserver: WebserverManager, installWebsocketExtension: Boolean = true) {
             if (enabled) return
             enabled = true
@@ -55,16 +63,25 @@ class AdminPanelInstaller private constructor() {
             startTimer()
         }
 
+        /**
+         * Load the s.Admin config file. (admin-config.json)
+         */
         fun loadConfig() {
             if (!configHandler.checkIfExists()) configHandler.saveDefaultConfig()
             currentConfig = configHandler.loadConfig();
         }
 
+        /**
+         * Save the s.Admin config file. (admin-config.json)
+         */
         fun saveConfig(config: AdminPanelConfig = currentConfig) {
             currentConfig = config
             configHandler.storeConfig(config)
         }
 
+        /**
+         * Get the default console prefix from s.Admin as an ansi object
+         */
         fun prefix(): Ansi{
             return Ansi.ansi()
                 .fgBright(Ansi.Color.BLACK).a("[")
@@ -72,6 +89,10 @@ class AdminPanelInstaller private constructor() {
                 .fgBright(Ansi.Color.BLACK).a("] ")
         }
 
+        /**
+         * Start the cleanup scheduler.
+         * This function is useful when starting s.Admin manually.
+         */
         fun startTimer() {
             Timer("s-admin-panel-token-invalidator").scheduleAtFixedRate(
                 timerTask {
@@ -128,10 +149,8 @@ class AdminPanelInstaller private constructor() {
                             }
                         }).start()
                     }
-                },
-                TimeUnit.SECONDS.toMillis(30),
-                TimeUnit.SECONDS.toMillis(30)
-            )
+                }, TimeUnit.SECONDS.toMillis(CLEANUP_SCHEDULER_SECONDS),
+                TimeUnit.SECONDS.toMillis(CLEANUP_SCHEDULER_SECONDS))
         }
     }
 }

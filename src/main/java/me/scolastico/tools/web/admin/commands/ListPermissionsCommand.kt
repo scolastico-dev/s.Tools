@@ -16,6 +16,10 @@ import picocli.CommandLine.Option
 )
 class ListPermissionsCommand: Runnable {
 
+    companion object {
+        private const val AUTO_LINE_BREAK_CHAR_COUNT = 100
+    }
+
     @Option(
         names = ["-u", "--user"],
         description = ["Set an username to only show the permissions of an user."]
@@ -45,7 +49,7 @@ class ListPermissionsCommand: Runnable {
             val generator = TableGeneratorThemes.FANCY_BOARDER()
                 .setBoarderColorPrefix(Ansi.ansi().fgBright(Ansi.Color.BLACK).toString())
                 .setBoarderColorSuffix(Ansi.ansi().fgDefault().toString())
-                .setAutoLineBreak(100)
+                .setAutoLineBreak(AUTO_LINE_BREAK_CHAR_COUNT)
                 .addContent(
                     Ansi.ansi().fgYellow().a("User").reset().toString(),
                     Ansi.ansi().a(TableGenerator.CENTER_ALIGNMENT).fgYellow().a("Permission")
