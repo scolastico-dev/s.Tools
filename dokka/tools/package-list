@@ -65,6 +65,7 @@ $dokka.location:me.scolastico.tools.console/ConsoleManager/getTerminal/#/Pointin
 $dokka.location:me.scolastico.tools.console/ConsoleManager/isEnabled/#/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/is-enabled.html
 $dokka.location:me.scolastico.tools.console/ConsoleManager/isOutputPrefixTime/#/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/is-output-prefix-time.html
 $dokka.location:me.scolastico.tools.console/ConsoleManager/registerCommand/#java.lang.Object/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/register-command.html
+$dokka.location:me.scolastico.tools.console/ConsoleManager/registerNewLogLineRoutine/#me.scolastico.tools.routine.Routine/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/register-new-log-line-routine.html
 $dokka.location:me.scolastico.tools.console/ConsoleManager/runCommand/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/run-command.html
 $dokka.location:me.scolastico.tools.console/ConsoleManager/setHelpPageRenderer/#java.util.function.Consumer<java.lang.Object>/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/set-help-page-renderer.html
 $dokka.location:me.scolastico.tools.console/ConsoleManager/setInputPrefix/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.console/-console-manager/set-input-prefix.html
@@ -282,6 +283,9 @@ $dokka.location:me.scolastico.tools.simplified/PBGson/s/#/PointingToDeclaration/
 $dokka.location:me.scolastico.tools.simplified/PBGson/small/#/PointingToDeclaration/tools/me.scolastico.tools.simplified/-p-b-gson/small.html
 $dokka.location:me.scolastico.tools.simplified/PBGson/smallNoNull/#/PointingToDeclaration/tools/me.scolastico.tools.simplified/-p-b-gson/small-no-null.html
 $dokka.location:me.scolastico.tools.simplified/PBGson/snn/#/PointingToDeclaration/tools/me.scolastico.tools.simplified/-p-b-gson/snn.html
+$dokka.location:me.scolastico.tools.simplified/SimplifiedReflectionsClassFinder.Companion///PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-reflections-class-finder/-companion/index.html
+$dokka.location:me.scolastico.tools.simplified/SimplifiedReflectionsClassFinder.Companion/getAllClassesInPackage/#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-reflections-class-finder/-companion/get-all-classes-in-package.html
+$dokka.location:me.scolastico.tools.simplified/SimplifiedReflectionsClassFinder///PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-reflections-class-finder/index.html
 $dokka.location:me.scolastico.tools.simplified/SimplifiedResourceFileReader///PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-resource-file-reader/index.html
 $dokka.location:me.scolastico.tools.simplified/SimplifiedResourceFileReader/getAllResourcesInFolder/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-resource-file-reader/get-all-resources-in-folder.html
 $dokka.location:me.scolastico.tools.simplified/SimplifiedResourceFileReader/getByteArrayFromResources/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.simplified/-simplified-resource-file-reader/get-byte-array-from-resources.html
@@ -290,6 +294,101 @@ $dokka.location:me.scolastico.tools.simplified/SimplifiedResourceFileReader/inst
 $dokka.location:me.scolastico.tools.simplified/URLCoder///PointingToDeclaration/tools/me.scolastico.tools.simplified/-u-r-l-coder/index.html
 $dokka.location:me.scolastico.tools.simplified/URLCoder/decodeURL/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.simplified/-u-r-l-coder/decode-u-r-l.html
 $dokka.location:me.scolastico.tools.simplified/URLCoder/encodeURL/#java.lang.String/PointingToDeclaration/tools/me.scolastico.tools.simplified/-u-r-l-coder/encode-u-r-l.html
+$dokka.location:me.scolastico.tools.web.admin.commands////PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/AddPermissionCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-add-permission-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/AddPermissionCommand/AddPermissionCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-add-permission-command/-add-permission-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/AddPermissionCommand/permission/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-add-permission-command/permission.html
+$dokka.location:me.scolastico.tools.web.admin.commands/AddPermissionCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-add-permission-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/AddPermissionCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-add-permission-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ChangePasswordCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-change-password-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ChangePasswordCommand/ChangePasswordCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-change-password-command/-change-password-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ChangePasswordCommand/password/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-change-password-command/password.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ChangePasswordCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-change-password-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ChangePasswordCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-change-password-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/-companion/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand.Companion/createUser/#kotlin.String#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/-companion/create-user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand/CreateUserCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/-create-user-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand/password/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/password.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-create-user-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeletePermissionCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-permission-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeletePermissionCommand/DeletePermissionCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-permission-command/-delete-permission-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeletePermissionCommand/permission/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-permission-command/permission.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeletePermissionCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-permission-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeletePermissionCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-permission-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeleteUserCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-user-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeleteUserCommand/DeleteUserCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-user-command/-delete-user-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeleteUserCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-user-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/DeleteUserCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-delete-user-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-permissions-command/-companion/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-permissions-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand/ListPermissionsCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-permissions-command/-list-permissions-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-permissions-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-permissions-command/user.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListUserCommand///PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-user-command/index.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListUserCommand/ListUserCommand/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-user-command/-list-user-command.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListUserCommand/run/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.commands/-list-user-command/run.html
+$dokka.location:me.scolastico.tools.web.admin.etc////PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig/AdminPanelConfig/#kotlin.Boolean#java.util.HashMap[kotlin.String,kotlin.String]#java.util.HashMap[kotlin.String,kotlin.String]#java.util.HashMap[kotlin.String,java.util.ArrayList[kotlin.String]]/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/-admin-panel-config.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig/permissions/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/permissions.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig/secureCookie/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/secure-cookie.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig/staticTokens/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/static-tokens.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelConfig/user/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-config/user.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelLoginData///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-login-data/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelLoginData/AdminPanelLoginData/#kotlin.String#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-login-data/-admin-panel-login-data.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelLoginData/password/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-login-data/password.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelLoginData/username/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-login-data/username.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelSendCommandData///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-send-command-data/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelSendCommandData/AdminPanelSendCommandData/#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-send-command-data/-admin-panel-send-command-data.html
+$dokka.location:me.scolastico.tools.web.admin.etc/AdminPanelSendCommandData/command/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-admin-panel-send-command-data/command.html
+$dokka.location:me.scolastico.tools.web.admin.etc/NewLogLineEventHandler///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-new-log-line-event-handler/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/NewLogLineEventHandler/NewLogLineEventHandler/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-new-log-line-event-handler/-new-log-line-event-handler.html
+$dokka.location:me.scolastico.tools.web.admin.etc/NewLogLineEventHandler/execute/#java.util.HashMap[kotlin.String,kotlin.Any]?/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-new-log-line-event-handler/execute.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/-companion/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller.Companion/PING_PERIOD/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/-companion/-p-i-n-g_-p-e-r-i-o-d.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller.Companion/TIMEOUT_PERIOD/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/-companion/-t-i-m-e-o-u-t_-p-e-r-i-o-d.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller///PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/index.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller/WebsocketInstaller/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/-websocket-installer.html
+$dokka.location:me.scolastico.tools.web.admin.etc/WebsocketInstaller/moduleWebsocketInstaller/io.ktor.server.application.Application#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.etc/-websocket-installer/module-websocket-installer.html
+$dokka.location:me.scolastico.tools.web.admin.web////PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/index.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/index.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/connections/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/connections.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/getUser/#io.ktor.server.application.ApplicationCall/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/get-user.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/timeouts/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/timeouts.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/users/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/users.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI///PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/index.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI/AdminPanelAPI/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-admin-panel-a-p-i.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI/moduleAdminPanelAPI/io.ktor.server.application.Application#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/module-admin-panel-a-p-i.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelFrontend///PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-frontend/index.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelFrontend/AdminPanelFrontend/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-frontend/-admin-panel-frontend.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelFrontend/moduleAdminPanelFrontend/io.ktor.server.application.Application#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-frontend/module-admin-panel-frontend.html
+$dokka.location:me.scolastico.tools.web.admin////PointingToDeclaration/tools/me.scolastico.tools.web.admin/index.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/index.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/configHandler/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/config-handler.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/currentConfig/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/current-config.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/hasher/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/hasher.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/install/#me.scolastico.tools.web.WebserverManager#kotlin.Boolean/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/install.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/loadConfig/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/load-config.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/prefix/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/prefix.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/saveConfig/#me.scolastico.tools.web.admin.etc.AdminPanelConfig/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/save-config.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/startTimer/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/start-timer.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/tokenDate/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/token-date.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/tokens/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/tokens.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/verifier/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/verifier.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller///PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/index.html
+$dokka.location:me.scolastico.tools.web////PointingToDeclaration/tools/me.scolastico.tools.web/index.html
+$dokka.location:me.scolastico.tools.web/WebserverManager///PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/index.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/WebserverManager/#kotlin.Int#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/-webserver-manager.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/addApplicationConfigObject/#kotlin.String#kotlin.Any/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/add-application-config-object.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/addKtorConfigObject/#kotlin.String#kotlin.Any/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/add-ktor-config-object.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/moduleDefault/io.ktor.server.application.Application#/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/module-default.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/registerModule/#kotlin.Any/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/register-module.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/start/#/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/start.html
+$dokka.location:me.scolastico.tools.web/WebserverManager/stop/#kotlin.Long#kotlin.Long/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-manager/stop.html
+$dokka.location:me.scolastico.tools.web/WebserverRegistration///PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-registration/index.html
+$dokka.location:me.scolastico.tools.web/WebserverRegistration/WebserverRegistration/#/PointingToDeclaration/tools/me.scolastico.tools.web/-webserver-registration/-webserver-registration.html
 me.scolastico.tools.cache
 me.scolastico.tools.console
 me.scolastico.tools.console.commands
@@ -301,4 +400,9 @@ me.scolastico.tools.pairs
 me.scolastico.tools.routine
 me.scolastico.tools.simplified
 me.scolastico.tools.simplified.rsa
+me.scolastico.tools.web
+me.scolastico.tools.web.admin
+me.scolastico.tools.web.admin.commands
+me.scolastico.tools.web.admin.etc
+me.scolastico.tools.web.admin.web
 
