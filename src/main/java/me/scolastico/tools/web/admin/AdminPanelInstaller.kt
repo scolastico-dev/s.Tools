@@ -1,6 +1,8 @@
 package me.scolastico.tools.web.admin
 
 import com.kosprov.jargon2.api.Jargon2
+import io.ktor.websocket.*
+import kotlinx.coroutines.runBlocking
 import me.scolastico.tools.console.ConsoleManager
 import me.scolastico.tools.handler.ConfigHandler
 import me.scolastico.tools.web.WebserverManager
@@ -75,6 +77,7 @@ class AdminPanelInstaller private constructor() {
                 timerTask {
                     val toDeleteTokens = ArrayList<String>()
                     val toDeleteUser = ArrayList<String>()
+                    val toDeleteCon = ArrayList<String>()
                     for ((token,date) in tokenDate) {
                         if (date.plusMillis(TimeUnit.HOURS.toMillis(1)).isBefore(Instant.now())) {
                             toDeleteTokens.add(token)
@@ -91,6 +94,39 @@ class AdminPanelInstaller private constructor() {
                         println(prefix().fgYellow()
                             .a("The session of the user '$user' timed out.")
                             .fgDefault())
+                        if (AdminPanelAPI.users.containsKey(user)) {
+                            try {
+                                val id = AdminPanelAPI.users[user]!!
+                                val con = AdminPanelAPI.connections[id]!!
+                                AdminPanelAPI.users.remove(user)
+                                AdminPanelAPI.connections.remove(id)
+                                AdminPanelAPI.timeouts.remove(id)
+                                Thread(Runnable {
+                                    runBlocking {
+                                        try {
+                                            con.close(CloseReason(CloseReason.Codes.NORMAL, "timeout"))
+                                        } catch (ignored: Throwable) {}
+                                    }
+                                }).start()
+                            } catch (ignored: Throwable) {}
+                        }
+                    }
+                    for ((id,date) in AdminPanelAPI.timeouts) {
+                        if (date.plusMillis(TimeUnit.MINUTES.toMillis(2)).isBefore(Instant.now())) {
+                            toDeleteCon.add(id)
+                        }
+                    }
+                    for (id in toDeleteCon) {
+                        val con = AdminPanelAPI.connections[id]!!
+                        AdminPanelAPI.connections.remove(id)
+                        AdminPanelAPI.timeouts.remove(id)
+                        Thread(Runnable {
+                            runBlocking {
+                                try {
+                                    con.close(CloseReason(CloseReason.Codes.NORMAL, "timeout"))
+                                } catch (ignored: Throwable) {}
+                            }
+                        }).start()
                     }
                 },
                 TimeUnit.SECONDS.toMillis(30),

@@ -91,7 +91,7 @@ export default {
           }
         }
         this.connection.onclose = function (event) {
-          this.$parent.checkIfAuthenticated()
+          parent.$parent.checkIfAuthenticated()
         }
       })
       .catch((error) => {

@@ -10,13 +10,13 @@ class NewLogLineEventHandler: Routine {
 
     override fun execute(objectMap: HashMap<String, Any>?): RoutineAnswer {
         for ((key,con) in AdminPanelAPI.connections) {
-            if (AdminPanelAPI.authConnections.contains(key)) {
+            if (AdminPanelAPI.users.containsValue(key)) {
                 Thread(Runnable {
-                    try {
-                        runBlocking {
+                    runBlocking {
+                        try {
                             con.send((objectMap!!["line"] ?: "") as String)
-                        }
-                    } catch (ignored: Exception) {}
+                        } catch (ignored: Exception) {}
+                    }
                 }).start()
             }
         }

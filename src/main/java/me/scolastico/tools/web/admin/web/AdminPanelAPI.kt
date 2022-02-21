@@ -20,7 +20,8 @@ class AdminPanelAPI {
 
     companion object {
         val connections = HashMap<String, DefaultWebSocketServerSession>()
-        val authConnections = ArrayList<String>()
+        val users = HashMap<String, String>()
+        val timeouts = HashMap<String, Instant>()
     }
 
     @WebserverRegistration
@@ -63,6 +64,16 @@ class AdminPanelAPI {
                     if (!AdminPanelInstaller.currentConfig.staticTokens.containsValue(token)) {
                         AdminPanelInstaller.tokenDate.remove(token)
                         AdminPanelInstaller.tokens.remove(user)
+                        if (users.containsKey(user)) {
+                            try {
+                                val id = users[user]!!
+                                val con = connections[id]!!
+                                users.remove(user)
+                                connections.remove(id)
+                                timeouts.remove(id)
+                                con.close(CloseReason(CloseReason.Codes.NORMAL, "logout"))
+                            } catch (ignored: Throwable) {}
+                        }
                         call.response.cookies.appendExpired("s-admin-auth-token")
                         println(AdminPanelInstaller.prefix().fgYellow()
                             .a("User '$user' logged out.")
@@ -132,7 +143,8 @@ class AdminPanelAPI {
                 val user = getUser(call)
                 if (user != null) {
                     if (connections.containsKey(call.parameters["id"])) {
-                        authConnections.add(call.parameters["id"]!!)
+                        users[user] = call.parameters["id"]!!
+                        timeouts.remove(call.parameters["id"]!!)
                         connections[call.parameters["id"]!!]!!.send("authenticated with user $user")
                         call.respond(HttpStatusCode.OK)
                     } else call.respond(HttpStatusCode.NotFound)
@@ -144,6 +156,7 @@ class AdminPanelAPI {
                     id = RandomStringUtils.randomAlphanumeric(16)
                 } while (connections.containsKey(id))
                 connections[id] = this
+                timeouts[id] = Instant.now()
                 send(id)
                 for (frame in incoming) {
                     send(frame)
