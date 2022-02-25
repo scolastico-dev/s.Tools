@@ -97,7 +97,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("org.reflections:reflections:0.9.12")
     implementation("commons-fileupload:commons-fileupload:1.4")
-    implementation("org.springframework.boot:spring-boot-starter-web:2.6.1")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.6.4")
     implementation("org.fusesource.jansi:jansi:2.4.0")
     implementation("info.picocli:picocli:4.6.2")
     implementation("org.jline:jline:3.21.0")
