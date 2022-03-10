@@ -2,15 +2,15 @@
 package me.scolastico.tools.web.admin
 
 import com.kosprov.jargon2.api.Jargon2
-import io.ktor.websocket.*
+import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.runBlocking
 import me.scolastico.tools.console.ConsoleManager
 import me.scolastico.tools.handler.ConfigHandler
 import me.scolastico.tools.web.WebserverManager
 import me.scolastico.tools.web.admin.commands.*
 import me.scolastico.tools.web.admin.etc.AdminPanelConfig
+import me.scolastico.tools.web.admin.etc.KtorWebsocketInstaller
 import me.scolastico.tools.web.admin.etc.NewLogLineEventHandler
-import me.scolastico.tools.web.admin.etc.WebsocketInstaller
 import me.scolastico.tools.web.admin.web.AdminPanelAPI
 import me.scolastico.tools.web.admin.web.AdminPanelFrontend
 import org.fusesource.jansi.Ansi
@@ -49,7 +49,7 @@ class AdminPanelInstaller private constructor() {
             if (enabled) return
             enabled = true
             loadConfig()
-            if (installWebsocketExtension) webserver.registerModule(WebsocketInstaller())
+            if (installWebsocketExtension) webserver.registerModule(KtorWebsocketInstaller())
             webserver.registerModule(AdminPanelAPI())
             webserver.registerModule(AdminPanelFrontend())
             ConsoleManager.registerCommand(AddPermissionCommand())

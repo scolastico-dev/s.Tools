@@ -1,12 +1,12 @@
 package me.scolastico.tools.web.admin.web
 
+import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
+import io.ktor.http.cio.websocket.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.websocket.*
 import me.scolastico.tools.console.ConsoleManager
 import me.scolastico.tools.web.WebserverRegistration
@@ -71,14 +71,14 @@ class AdminPanelAPI {
                             .a("User '${data.username.lowercase()}' logged in " +
                                     "from '${call.request.origin.remoteHost}'.")
                             .fgDefault())
-                        var token = ""
+                        lateinit var token: String
                         do {
                             token = RandomStringUtils.randomAlphanumeric(LOGIN_TOKEN_LENGTH)
                         } while (
                             AdminPanelInstaller.currentConfig.staticTokens.containsValue(token) ||
                                     AdminPanelInstaller.tokens.containsValue(token)
                         )
-                        AdminPanelInstaller.tokens[data.username.lowercase()] = token
+                        AdminPanelInstaller.tokens[data.username.lowercase()] = token!!
                         AdminPanelInstaller.tokenDate[token] = Instant.now()
                         call.response.cookies.append(
                             "s-admin-auth-token",
@@ -178,7 +178,7 @@ class AdminPanelAPI {
                 } else call.respond(HttpStatusCode.Unauthorized)
             }
             webSocket("/.admin/api/console/live") {
-                var id = ""
+                lateinit var id: String
                 do {
                     id = RandomStringUtils.randomAlphanumeric(LIVE_TOKEN_LENGTH)
                 } while (connections.containsKey(id))

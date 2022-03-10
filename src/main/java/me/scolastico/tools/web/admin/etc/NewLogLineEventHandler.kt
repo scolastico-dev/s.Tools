@@ -1,6 +1,6 @@
 package me.scolastico.tools.web.admin.etc
 
-import io.ktor.websocket.*
+import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.runBlocking
 import me.scolastico.tools.routine.Routine
 import me.scolastico.tools.routine.RoutineAnswer

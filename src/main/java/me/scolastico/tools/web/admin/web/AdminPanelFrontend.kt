@@ -1,8 +1,8 @@
 package me.scolastico.tools.web.admin.web
 
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.routing.*
+import io.ktor.application.*
+import io.ktor.http.content.*
+import io.ktor.routing.*
 import me.scolastico.tools.web.WebserverRegistration
 
 class AdminPanelFrontend {

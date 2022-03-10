@@ -1,11 +1,12 @@
 package me.scolastico.tools.web.admin.etc
 
-import io.ktor.server.application.*
+import io.ktor.application.*
+import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
 import me.scolastico.tools.web.WebserverRegistration
 import java.time.Duration
 
-class WebsocketInstaller {
+class KtorWebsocketInstaller {
 
     companion object {
         var PING_PERIOD: Long = 15
@@ -17,7 +18,7 @@ class WebsocketInstaller {
      */
     @WebserverRegistration
     fun Application.moduleWebsocketInstaller() {
-        install(io.ktor.server.websocket.WebSockets) {
+        install(WebSockets) {
             pingPeriod = Duration.ofSeconds(PING_PERIOD)
             timeout = Duration.ofSeconds(TIMEOUT_PERIOD)
             maxFrameSize = Long.MAX_VALUE

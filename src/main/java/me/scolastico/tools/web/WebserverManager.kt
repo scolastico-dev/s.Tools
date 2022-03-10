@@ -2,12 +2,9 @@ package me.scolastico.tools.web
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
-import io.ktor.serialization.gson.*
-import io.ktor.server.application.*
-import io.ktor.server.config.*
+import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.*
 import org.slf4j.LoggerFactory
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
@@ -18,7 +15,6 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
     private val ktorConfigObjects = HashMap<String, Any>()
     private val applicationConfigObjects = HashMap<String, Any>()
     private var server: NettyApplicationEngine? = null
-    private val defaultModule = "me.scolastico.tools.web.WebserverManager.moduleDefault"
 
     /**
      * Start the WebserverManager.
@@ -26,7 +22,6 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
      */
     fun start():WebserverManager {
         if (server == null) {
-            if (!modules.contains(defaultModule)) modules.add(defaultModule)
             applicationConfigObjects["modules"] = ConfigValueFactory.fromIterable(modules.toList())
             ktorConfigObjects["application"] = ConfigValueFactory.fromMap(applicationConfigObjects)
             val c = ConfigFactory.load().withValue("ktor", ConfigValueFactory.fromMap(ktorConfigObjects))
@@ -86,18 +81,6 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
     fun addApplicationConfigObject(key: String, value: Any):WebserverManager {
         applicationConfigObjects[key] = value
         return this
-    }
-
-    /**
-     * The default module which will always be included in the webserver.
-     */
-    fun Application.moduleDefault() {
-        install(ContentNegotiation) {
-            gson {
-                serializeNulls()
-                disableHtmlEscaping()
-            }
-        }
     }
 
 }
