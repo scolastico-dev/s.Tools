@@ -10,7 +10,8 @@ public enum DataBaseType {
   SQLITE("sqlite"),
   POSTGRES("postgres"),
   ORACLE("oracle"),
-  H2("h2");
+  H2("h2"),
+  IN_MEMORY("in_memory");
 
   public final String name;
 
