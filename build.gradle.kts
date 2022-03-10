@@ -124,9 +124,6 @@ dependencies {
     api("io.ktor:ktor-server-netty:1.6.7")
     api("io.ktor:ktor-websockets:1.6.7")
     api("io.ktor:ktor-gson:1.6.7")
-    api("io.bkbn:kompendium-core:2.1.1")
-    api("io.bkbn:kompendium-auth:2.1.1")
-    api("io.bkbn:kompendium-swagger-ui:2.1.1")
     // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
     // and incompatibility with eban
     // api("com.h2database:h2:1.4.190")
