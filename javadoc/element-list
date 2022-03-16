@@ -1,6 +1,12 @@
 $dokka.format:javadoc-v1
 $dokka.linkExtension:html
 $dokka.location:me.scolastico.tools.etc/StringSplitter.Companion///PointingToDeclaration/me/scolastico/tools/etc/StringSplitter.Companion.html
+$dokka.location:me.scolastico.tools.simplified/SimplifiedReflectionsClassFinder.Companion///PointingToDeclaration/me/scolastico/tools/simplified/SimplifiedReflectionsClassFinder.Companion.html
+$dokka.location:me.scolastico.tools.web.admin.commands/CreateUserCommand.Companion///PointingToDeclaration/me/scolastico/tools/web/admin/commands/CreateUserCommand.Companion.html
+$dokka.location:me.scolastico.tools.web.admin.commands/ListPermissionsCommand.Companion///PointingToDeclaration/me/scolastico/tools/web/admin/commands/ListPermissionsCommand.Companion.html
+$dokka.location:me.scolastico.tools.web.admin.etc/KtorWebsocketInstaller.Companion///PointingToDeclaration/me/scolastico/tools/web/admin/etc/KtorWebsocketInstaller.Companion.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion///PointingToDeclaration/me/scolastico/tools/web/admin/web/AdminPanelAPI.Companion.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion///PointingToDeclaration/me/scolastico/tools/web/admin/AdminPanelInstaller.Companion.html
 me.scolastico.tools.cache
 me.scolastico.tools.console
 me.scolastico.tools.console.commands
@@ -12,4 +18,9 @@ me.scolastico.tools.pairs
 me.scolastico.tools.routine
 me.scolastico.tools.simplified
 me.scolastico.tools.simplified.rsa
+me.scolastico.tools.web
+me.scolastico.tools.web.admin
+me.scolastico.tools.web.admin.commands
+me.scolastico.tools.web.admin.etc
+me.scolastico.tools.web.admin.web
 
