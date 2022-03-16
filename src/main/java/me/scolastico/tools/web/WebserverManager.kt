@@ -11,7 +11,9 @@ import java.security.KeyStore
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
 
+@Suppress("LongParameterList")
 class WebserverManager(
+
     private val listeningPort: Int = 8080,
     private val listeningHost: String = "127.0.0.1",
     private val sslPort: Int? = null,
@@ -22,6 +24,7 @@ class WebserverManager(
     private val sslStorePassword: String = "password",
     var ktorConfigObjects: HashMap<String, Any> = HashMap(),
     var applicationConfigObjects: HashMap<String, Any> = HashMap(),
+
 ) {
 
     private val modules = ArrayList<String>()
@@ -38,8 +41,8 @@ class WebserverManager(
             ktorConfigObjects["application"] = ConfigValueFactory.fromMap(applicationConfigObjects)
             val c = ConfigFactory.load().withValue("ktor", ConfigValueFactory.fromMap(ktorConfigObjects))
             server = embeddedServer(Netty, environment = applicationEngineEnvironment {
-                log = LoggerFactory.getLogger("ktor.application")
                 config = HoconApplicationConfig(c)
+                log = LoggerFactory.getLogger("ktor.application")
                 if (!sslEnabled || sslPort != listeningPort) {
                     connector {
                         port = listeningPort
