@@ -6,14 +6,25 @@ import io.ktor.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.security.KeyStore
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
 
-class WebserverManager(private val listeningPort: Int = 8080, private val listeningHost: String = "127.0.0.1") {
+class WebserverManager(
+    private val listeningPort: Int = 8080,
+    private val listeningHost: String = "127.0.0.1",
+    private val sslPort: Int? = null,
+    private val sslKeyStoreFile: File? = null,
+    private val sslKeyStore: KeyStore? = null,
+    private val sslKeyAlias: String = "ssl",
+    private val sslKeyPassword: String = "password",
+    private val sslStorePassword: String = "password",
+    var ktorConfigObjects: HashMap<String, Any> = HashMap(),
+    var applicationConfigObjects: HashMap<String, Any> = HashMap(),
+) {
 
     private val modules = ArrayList<String>()
-    private val ktorConfigObjects = HashMap<String, Any>()
-    private val applicationConfigObjects = HashMap<String, Any>()
     private var server: NettyApplicationEngine? = null
 
     /**
@@ -22,15 +33,30 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
      */
     fun start():WebserverManager {
         if (server == null) {
+            val sslEnabled = sslKeyStore != null && sslPort != null && sslKeyStoreFile != null
             applicationConfigObjects["modules"] = ConfigValueFactory.fromIterable(modules.toList())
             ktorConfigObjects["application"] = ConfigValueFactory.fromMap(applicationConfigObjects)
             val c = ConfigFactory.load().withValue("ktor", ConfigValueFactory.fromMap(ktorConfigObjects))
             server = embeddedServer(Netty, environment = applicationEngineEnvironment {
                 log = LoggerFactory.getLogger("ktor.application")
                 config = HoconApplicationConfig(c)
-                connector {
-                    port = listeningPort
-                    host = listeningHost
+                if (!sslEnabled || sslPort != listeningPort) {
+                    connector {
+                        port = listeningPort
+                        host = listeningHost
+                    }
+                }
+                if (sslEnabled) {
+                    sslConnector(
+                        keyStore = sslKeyStore!!,
+                        keyAlias = sslKeyAlias,
+                        keyStorePassword = { sslStorePassword.toCharArray() },
+                        privateKeyPassword = { sslKeyPassword.toCharArray() }
+                    ) {
+                        port = sslPort!!
+                        keyStorePath = sslKeyStoreFile
+                        host = listeningHost
+                    }
                 }
             }).start(wait = false)
         }
@@ -60,26 +86,6 @@ class WebserverManager(private val listeningPort: Int = 8080, private val listen
                 modules.add("${module.javaClass.name}.${function.name}")
             }
         }
-        return this
-    }
-
-    /**
-     * Add a 'ktor' configuration object to the webserver.
-     * @param key The key of the configuration object.
-     * @param value The configuration object.
-     */
-    fun addKtorConfigObject(key: String, value: Any):WebserverManager {
-        ktorConfigObjects[key] = value
-        return this
-    }
-
-    /**
-     * Add a 'application' configuration object to the webserver.
-     * @param key The key of the configuration object.
-     * @param value The configuration object.
-     */
-    fun addApplicationConfigObject(key: String, value: Any):WebserverManager {
-        applicationConfigObjects[key] = value
         return this
     }
 
