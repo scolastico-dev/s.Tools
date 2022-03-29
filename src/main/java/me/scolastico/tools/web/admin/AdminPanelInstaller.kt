@@ -9,6 +9,7 @@ import me.scolastico.tools.handler.ConfigHandler
 import me.scolastico.tools.web.WebserverManager
 import me.scolastico.tools.web.admin.commands.*
 import me.scolastico.tools.web.admin.etc.AdminPanelConfig
+import me.scolastico.tools.web.admin.etc.KtorGsonInstaller
 import me.scolastico.tools.web.admin.etc.KtorWebsocketInstaller
 import me.scolastico.tools.web.admin.etc.NewLogLineEventHandler
 import me.scolastico.tools.web.admin.web.AdminPanelAPI
@@ -45,11 +46,12 @@ class AdminPanelInstaller private constructor() {
          * @param webserver The webserver where to install the module.
          * @param installWebsocketExtension Should the ktor websocket extension be installed automatically?
          */
-        fun install(webserver: WebserverManager, installWebsocketExtension: Boolean = true) {
+        fun install(webserver: WebserverManager, installWebsocketExtension: Boolean = true, installGSONExtension: Boolean = true) {
             if (enabled) return
             enabled = true
             loadConfig()
             if (installWebsocketExtension) webserver.registerModule(KtorWebsocketInstaller())
+            if (installGSONExtension) webserver.registerModule(KtorGsonInstaller())
             webserver.registerModule(AdminPanelAPI())
             webserver.registerModule(AdminPanelFrontend())
             ConsoleManager.registerCommand(AddPermissionCommand())
@@ -98,7 +100,6 @@ class AdminPanelInstaller private constructor() {
                 timerTask {
                     val toDeleteTokens = ArrayList<String>()
                     val toDeleteUser = ArrayList<String>()
-                    val toDeleteCon = ArrayList<String>()
                     for ((token,date) in tokenDate) {
                         if (date.plusMillis(TimeUnit.HOURS.toMillis(1)).isBefore(Instant.now())) {
                             toDeleteTokens.add(token)
@@ -115,13 +116,10 @@ class AdminPanelInstaller private constructor() {
                         println(prefix().fgYellow()
                             .a("The session of the user '$user' timed out.")
                             .fgDefault())
-                        if (AdminPanelAPI.users.containsKey(user)) {
+                        if (AdminPanelAPI.connections.containsKey(user)) {
                             try {
-                                val id = AdminPanelAPI.users[user]!!
-                                val con = AdminPanelAPI.connections[id]!!
-                                AdminPanelAPI.users.remove(user)
-                                AdminPanelAPI.connections.remove(id)
-                                AdminPanelAPI.timeouts.remove(id)
+                                val con = AdminPanelAPI.connections[user]!!
+                                AdminPanelAPI.connections.remove(user)
                                 Thread(Runnable {
                                     runBlocking {
                                         try {
@@ -131,23 +129,6 @@ class AdminPanelInstaller private constructor() {
                                 }).start()
                             } catch (ignored: Throwable) {}
                         }
-                    }
-                    for ((id,date) in AdminPanelAPI.timeouts) {
-                        if (date.plusMillis(TimeUnit.MINUTES.toMillis(2)).isBefore(Instant.now())) {
-                            toDeleteCon.add(id)
-                        }
-                    }
-                    for (id in toDeleteCon) {
-                        val con = AdminPanelAPI.connections[id]!!
-                        AdminPanelAPI.connections.remove(id)
-                        AdminPanelAPI.timeouts.remove(id)
-                        Thread(Runnable {
-                            runBlocking {
-                                try {
-                                    con.close(CloseReason(CloseReason.Codes.NORMAL, "timeout"))
-                                } catch (ignored: Throwable) {}
-                            }
-                        }).start()
                     }
                 }, TimeUnit.SECONDS.toMillis(CLEANUP_SCHEDULER_SECONDS),
                 TimeUnit.SECONDS.toMillis(CLEANUP_SCHEDULER_SECONDS))

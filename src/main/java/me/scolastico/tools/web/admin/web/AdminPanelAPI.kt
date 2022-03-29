@@ -20,12 +20,9 @@ import java.time.Instant
 class AdminPanelAPI {
 
     companion object {
-        private const val LIVE_TOKEN_LENGTH = 16
         private const val LOGIN_TOKEN_LENGTH = 128
 
         val connections = HashMap<String, DefaultWebSocketServerSession>()
-        val users = HashMap<String, String>()
-        val timeouts = HashMap<String, Instant>()
 
         /**
          * Internal function to get the user from a web call.
@@ -50,6 +47,42 @@ class AdminPanelAPI {
                 }
             }
             return user
+        }
+
+        fun executeCommand(command: String, user: String): Boolean {
+            val cmd = command.split(" ")[0]
+            var hasPermission = false
+            for (permission in AdminPanelInstaller.currentConfig.permissions[user]?: ArrayList()) {
+                val allowAll = permission == "*"
+                val isExactCommand = permission == cmd
+                val startsWith = permission.startsWith("*") &&
+                        cmd.endsWith(permission.replaceFirst("*", ""))
+                val endsWith = permission.endsWith("*") &&
+                        cmd.startsWith(permission.substring(0, permission.length - 1))
+                if (allowAll || isExactCommand || startsWith || endsWith) {
+                    hasPermission = true
+                    break
+                }
+            }
+            if (hasPermission) {
+                println(AdminPanelInstaller.prefix().fgYellow()
+                    .a("User '$user' executed command '$command'.")
+                    .fgDefault())
+                try {
+                    ConsoleManager.runCommand(command)
+                } catch (ignored: Throwable) {
+                    println(AdminPanelInstaller.prefix().fgRed()
+                        .a("Something went wrong while executing command '$command'...")
+                        .fgDefault())
+                }
+                return true
+            } else {
+                println(AdminPanelInstaller.prefix().fgYellow()
+                    .a("User '$user' try'd to executed command '$command' " +
+                            "but hasn't enough permissions to do so.")
+                    .fgDefault())
+            }
+            return false
         }
     }
 
@@ -78,7 +111,7 @@ class AdminPanelAPI {
                             AdminPanelInstaller.currentConfig.staticTokens.containsValue(token) ||
                                     AdminPanelInstaller.tokens.containsValue(token)
                         )
-                        AdminPanelInstaller.tokens[data.username.lowercase()] = token!!
+                        AdminPanelInstaller.tokens[data.username.lowercase()] = token
                         AdminPanelInstaller.tokenDate[token] = Instant.now()
                         call.response.cookies.append(
                             "s-admin-auth-token",
@@ -97,13 +130,10 @@ class AdminPanelAPI {
                     if (!AdminPanelInstaller.currentConfig.staticTokens.containsValue(token)) {
                         AdminPanelInstaller.tokenDate.remove(token)
                         AdminPanelInstaller.tokens.remove(user)
-                        if (users.containsKey(user)) {
+                        if (connections.containsKey(user)) {
                             try {
-                                val id = users[user]!!
-                                val con = connections[id]!!
-                                users.remove(user)
-                                connections.remove(id)
-                                timeouts.remove(id)
+                                val con = connections[user]!!
+                                connections.remove(user)
                                 con.close(CloseReason(CloseReason.Codes.NORMAL, "logout"))
                             } catch (ignored: Throwable) {}
                         }
@@ -123,39 +153,11 @@ class AdminPanelAPI {
             }
             post("/.admin/api/console/send") {
                 val data = call.receive<AdminPanelSendCommandData>()
-                val cmd = data.command.split(" ")[0]
                 val user = getUser(call)
                 if (user != null) {
-                    var hasPermission = false
-                    for (permission in AdminPanelInstaller.currentConfig.permissions[user]?: ArrayList()) {
-                        val allowAll = permission == "*"
-                        val isExactCommand = permission == cmd
-                        val startsWith = permission.startsWith("*") &&
-                                cmd.endsWith(permission.replaceFirst("*", ""))
-                        val endsWith = permission.endsWith("*") &&
-                                cmd.startsWith(permission.substring(0, permission.length - 1))
-                        if (allowAll || isExactCommand || startsWith || endsWith) {
-                            hasPermission = true
-                            break
-                        }
-                    }
-                    if (hasPermission) {
-                        println(AdminPanelInstaller.prefix().fgYellow()
-                            .a("User '$user' executed command '${data.command}'.")
-                            .fgDefault())
-                        try {
-                            ConsoleManager.runCommand(data.command)
-                        } catch (ignored: Throwable) {
-                            println(AdminPanelInstaller.prefix().fgRed()
-                                .a("Something went wrong while executing command '${data.command}'...")
-                                .fgDefault())
-                        }
+                    if (executeCommand(data.command, user)) {
                         call.respond(HttpStatusCode.OK)
                     } else {
-                        println(AdminPanelInstaller.prefix().fgYellow()
-                            .a("User '$user' try'd to executed command '${data.command}' " +
-                                    "but hasn't enough permissions to do so.")
-                            .fgDefault())
                         call.respond(HttpStatusCode.Forbidden)
                     }
                 } else call.respond(HttpStatusCode.Unauthorized)
@@ -166,27 +168,38 @@ class AdminPanelAPI {
                     call.respond(ConsoleManager.getLastLogLines())
                 } else call.respond(HttpStatusCode.Unauthorized)
             }
-            get("/.admin/api/auth/live/{id}") {
-                val user = getUser(call)
-                if (user != null) {
-                    if (connections.containsKey(call.parameters["id"])) {
-                        users[user] = call.parameters["id"]!!
-                        timeouts.remove(call.parameters["id"]!!)
-                        connections[call.parameters["id"]!!]!!.send("authenticated with user $user")
-                        call.respond(HttpStatusCode.OK)
-                    } else call.respond(HttpStatusCode.NotFound)
-                } else call.respond(HttpStatusCode.Unauthorized)
-            }
             webSocket("/.admin/api/console/live") {
-                lateinit var id: String
-                do {
-                    id = RandomStringUtils.randomAlphanumeric(LIVE_TOKEN_LENGTH)
-                } while (connections.containsKey(id))
-                connections[id] = this
-                timeouts[id] = Instant.now()
-                send(id)
+                val user = getUser(call)
+                if (user == null) {
+                    send("unauthorized")
+                    close(CloseReason(CloseReason.Codes.NORMAL, "unauthorized"))
+                    return@webSocket
+                }
+                connections[user] = this
                 for (frame in incoming) {
-                    send(frame)
+                    frame as? Frame.Text ?: continue
+                    executeCommand(frame.readText(), user)
+                }
+            }
+            intercept(ApplicationCallPipeline.Features) {
+                if (call.request.path() == "/.admin/api/console/live") {
+                    val user = getUser(call)
+                    if (user == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "unauthorized")
+                        finish()
+                        return@intercept
+                    }
+                    if (connections.containsKey(user)) {
+                        try {
+                            val con = connections[user]!!
+                            connections.remove(user)
+                            con.send("logged in from else where")
+                            con.close(CloseReason(
+                                CloseReason.Codes.NORMAL,
+                                "logged in from else where"
+                            ))
+                        } catch (ignored: Throwable) {}
+                    }
                 }
             }
         }
