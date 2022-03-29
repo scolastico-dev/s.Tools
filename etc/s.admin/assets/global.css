@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'CascadiaMono';
+  src: local('CascadiaMono'), url(~assets/CascadiaMono.ttf) format('truetype');
+}
+
+body,
+#body-wrapper {
+  @apply min-h-screen min-w-full;
+}

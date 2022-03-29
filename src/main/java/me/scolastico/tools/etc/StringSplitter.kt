@@ -5,7 +5,6 @@ package me.scolastico.tools.etc
  */
 class StringSplitter private constructor() {
     companion object {
-
         /**
          * Split strings by length into an array.
          * @param string The string to split.
@@ -22,6 +21,5 @@ class StringSplitter private constructor() {
             if (remaining.isNotEmpty()) list.add(remaining)
             return list.toTypedArray()
         }
-
     }
 }

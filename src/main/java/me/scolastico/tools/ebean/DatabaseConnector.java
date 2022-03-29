@@ -137,6 +137,11 @@ public class DatabaseConnector {
           dataSourceConfig.setDriver("org.h2.Driver");
           dataSourceConfig.setUrl("jdbc:h2:" + config.getHost());
           break;
+
+        case "in_memory":
+          dataSourceConfig.setDriver("org.sqlite.JDBC");
+          dataSourceConfig.setUrl("jdbc:sqlite::memory:");
+
       }
       dbConfig.setDataSourceConfig(dataSourceConfig);
       dbConfig.setName(config.getDatabase());

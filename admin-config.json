@@ -1,0 +1,17 @@
+{
+  "secureCookie": false,
+  "user": {
+    "test2": "$argon2d$v=19$m=65536,t=3,p=4$wXxZBC7Q6rtbULWi/tKJQQ$sNUltXtK2MH9vlKfFPunqQ",
+    "test": "$argon2d$v=19$m=65536,t=3,p=4$IP9XkEWUZyCGBC49XduZAQ$4yXxIp/tzuWFK6sK/zgRJQ"
+  },
+  "staticTokens": {},
+  "permissions": {
+    "test2": [
+      "help",
+      "list*"
+    ],
+    "test": [
+      "*"
+    ]
+  }
+}
