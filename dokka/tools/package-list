@@ -359,9 +359,8 @@ $dokka.location:me.scolastico.tools.web.admin.etc/NewLogLineEventHandler/execute
 $dokka.location:me.scolastico.tools.web.admin.web////PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/index.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion///PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/index.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/connections/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/connections.html
+$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/executeCommand/#kotlin.String#kotlin.String/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/execute-command.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/getUser/#io.ktor.application.ApplicationCall/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/get-user.html
-$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/timeouts/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/timeouts.html
-$dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI.Companion/users/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-companion/users.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI///PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/index.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI/AdminPanelAPI/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/-admin-panel-a-p-i.html
 $dokka.location:me.scolastico.tools.web.admin.web/AdminPanelAPI/moduleAdminPanelAPI/io.ktor.application.Application#/PointingToDeclaration/tools/me.scolastico.tools.web.admin.web/-admin-panel-a-p-i/module-admin-panel-a-p-i.html
@@ -373,7 +372,7 @@ $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion///Po
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/configHandler/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/config-handler.html
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/currentConfig/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/current-config.html
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/hasher/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/hasher.html
-$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/install/#me.scolastico.tools.web.WebserverManager#kotlin.Boolean/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/install.html
+$dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/install/#me.scolastico.tools.web.WebserverManager#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/install.html
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/loadConfig/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/load-config.html
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/prefix/#/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/prefix.html
 $dokka.location:me.scolastico.tools.web.admin/AdminPanelInstaller.Companion/saveConfig/#me.scolastico.tools.web.admin.etc.AdminPanelConfig/PointingToDeclaration/tools/me.scolastico.tools.web.admin/-admin-panel-installer/-companion/save-config.html
