@@ -29,7 +29,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.0")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
     }
 }
@@ -97,7 +97,7 @@ dependencies {
     api("com.google.code.gson:gson:2.9.0")
     api("org.reflections:reflections:0.9.12")
     api("commons-fileupload:commons-fileupload:1.4")
-    api("org.springframework.boot:spring-boot-starter-web:2.6.4")
+    api("org.springframework.boot:spring-boot-starter-web:2.6.5")
     api("org.fusesource.jansi:jansi:2.4.0")
     api("info.picocli:picocli:4.6.3")
     api("org.jline:jline:3.21.0")
@@ -123,7 +123,7 @@ dependencies {
     api("io.ktor:ktor-server-core:1.6.7")
     api("io.ktor:ktor-server-netty:1.6.7")
     api("io.ktor:ktor-websockets:1.6.7")
-    api("io.ktor:ktor-gson:1.6.7")
+    api("io.ktor:ktor-gson:1.6.8")
     api("io.ktor:ktor-network-tls-certificates:1.6.7")
     // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
     // and incompatibility with eban
