@@ -46,7 +46,11 @@ class AdminPanelInstaller private constructor() {
          * @param webserver The webserver where to install the module.
          * @param installWebsocketExtension Should the ktor websocket extension be installed automatically?
          */
-        fun install(webserver: WebserverManager, installWebsocketExtension: Boolean = true, installGSONExtension: Boolean = true) {
+        fun install(
+            webserver: WebserverManager,
+            installWebsocketExtension: Boolean = true,
+            installGSONExtension: Boolean = true
+        ) {
             if (enabled) return
             enabled = true
             loadConfig()

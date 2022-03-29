@@ -49,6 +49,12 @@ class AdminPanelAPI {
             return user
         }
 
+        /**
+         * Internal function to execute a command for an admin panel user.
+         * @param command The command to execute.
+         * @param user The user for which the command should be executed.
+         * @return Returns true if the user had the permission to do that.
+         */
         fun executeCommand(command: String, user: String): Boolean {
             val cmd = command.split(" ")[0]
             var hasPermission = false
