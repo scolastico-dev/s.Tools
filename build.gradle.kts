@@ -95,7 +95,7 @@ dependencies {
     api("org.apache.commons:commons-lang3:3.12.0")
     api("commons-io:commons-io:2.11.0")
     api("com.google.code.gson:gson:2.9.0")
-    api("org.reflections:reflections:0.9.12")
+    api("org.reflections:reflections:0.10.2")
     api("commons-fileupload:commons-fileupload:1.4")
     api("org.springframework.boot:spring-boot-starter-web:2.6.5")
     api("org.fusesource.jansi:jansi:2.4.0")
