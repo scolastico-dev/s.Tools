@@ -29,7 +29,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.0")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
     }
 }
@@ -97,7 +97,7 @@ dependencies {
     api("com.google.code.gson:gson:2.9.0")
     api("org.reflections:reflections:0.9.12")
     api("commons-fileupload:commons-fileupload:1.4")
-    api("org.springframework.boot:spring-boot-starter-web:2.6.4")
+    api("org.springframework.boot:spring-boot-starter-web:2.6.5")
     api("org.fusesource.jansi:jansi:2.4.0")
     api("info.picocli:picocli:4.6.3")
     api("org.jline:jline:3.21.0")
@@ -106,7 +106,7 @@ dependencies {
     api("org.json:json:20211205")
     api("io.ebean:ebean:12.15.0")
     api("io.ebean:ebean-test:12.15.0")
-    api("io.ebean:ebean-migration:12.15.0")
+    api("io.ebean:ebean-migration:12.16.1")
     api("com.fasterxml.jackson.core:jackson-core:2.13.2")
     api("mysql:mysql-connector-java:8.0.28")
     api("org.mariadb.jdbc:mariadb-java-client:3.0.3")
