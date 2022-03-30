@@ -113,7 +113,7 @@ dependencies {
     api("org.xerial:sqlite-jdbc:3.36.0.3")
     api("com.microsoft.sqlserver:mssql-jdbc:10.2.0.jre11")
     api("org.postgresql:postgresql:42.3.3")
-    api("com.oracle.database.jdbc:ojdbc10:19.13.0.0")
+    api("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
     api("com.fasterxml.jackson.core:jackson-databind:2.13.2")
     api("com.googlecode.lanterna:lanterna:3.1.1")
     api("info.picocli:picocli-shell-jline3:4.6.3")
