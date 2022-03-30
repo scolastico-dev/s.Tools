@@ -103,7 +103,7 @@ dependencies {
     api("org.jline:jline:3.21.0")
     api("com.kosprov.jargon2:jargon2-api:1.1.1")
     api("com.kosprov.jargon2:jargon2-native-ri-backend:1.1.1")
-    api("org.json:json:20211205")
+    api("org.json:json:20220320")
     api("io.ebean:ebean:12.16.1")
     api("io.ebean:ebean-test:12.15.0")
     api("io.ebean:ebean-migration:12.16.1")
