@@ -121,7 +121,7 @@ dependencies {
     api("org.jline:jline-console:3.21.0")
     api("commons-codec:commons-codec:1.15")
     api("io.ktor:ktor-server-core:1.6.7")
-    api("io.ktor:ktor-server-netty:1.6.7")
+    api("io.ktor:ktor-server-netty:1.6.8")
     api("io.ktor:ktor-websockets:1.6.8")
     api("io.ktor:ktor-gson:1.6.8")
     api("io.ktor:ktor-network-tls-certificates:1.6.8")
