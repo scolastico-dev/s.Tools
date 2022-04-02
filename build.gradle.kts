@@ -97,7 +97,7 @@ dependencies {
     api("com.google.code.gson:gson:2.9.0")
     api("org.reflections:reflections:0.9.12")
     api("commons-fileupload:commons-fileupload:1.4")
-    api("org.springframework.boot:spring-boot-starter-web:2.6.5")
+    api("org.springframework.boot:spring-boot-starter-web:2.6.6")
     api("org.fusesource.jansi:jansi:2.4.0")
     api("info.picocli:picocli:4.6.3")
     api("org.jline:jline:3.21.0")
