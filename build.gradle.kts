@@ -106,7 +106,7 @@ dependencies {
     api("org.json:json:20220320")
     api("io.ebean:ebean:13.0.0")
     api("io.ebean:ebean-test:13.0.0")
-    api("io.ebean:ebean-migration:12.16.1")
+    api("io.ebean:ebean-migration:13.0.0")
     api("com.fasterxml.jackson.core:jackson-core:2.13.2")
     api("mysql:mysql-connector-java:8.0.28")
     api("org.mariadb.jdbc:mariadb-java-client:3.0.3")
