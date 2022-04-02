@@ -114,7 +114,7 @@ dependencies {
     api("com.microsoft.sqlserver:mssql-jdbc:10.2.0.jre11")
     api("org.postgresql:postgresql:42.3.3")
     api("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
-    api("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+    api("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
     api("com.googlecode.lanterna:lanterna:3.1.1")
     api("info.picocli:picocli-shell-jline3:4.6.3")
     api("org.jline:jline:3.21.0")
