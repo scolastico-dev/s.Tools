@@ -91,7 +91,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configure
 dependencies {
     testImplementation(kotlin("test"))
     api("io.leego:banana:2.1.0")
-    api("io.sentry:sentry:5.6.2")
+    api("io.sentry:sentry:5.7.1")
     api("org.apache.commons:commons-lang3:3.12.0")
     api("commons-io:commons-io:2.11.0")
     api("com.google.code.gson:gson:2.9.0")
