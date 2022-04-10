@@ -49,11 +49,8 @@ public class StackTraceRedirectionPrintStream extends PrintStream {
   }
 
   @Override public void close() {
-    if (shouldBeRedirected()) {
-      redirectedPrintStream.close();
-    } else {
-      normalPrintStream.close();
-    }
+    redirectedPrintStream.close();
+    normalPrintStream.close();
   }
 
   private boolean shouldBeRedirected() {
