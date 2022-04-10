@@ -104,10 +104,16 @@ public class ConsoleManager {
         String currentLine = "";
         @Override
         public void accept(String s) {
-          currentLine += s;
-          if (currentLine.endsWith("\n") || currentLine.endsWith("\r") || currentLine.endsWith("\r\n")) {
-            print(currentLine, READER);
-            currentLine = "";
+          currentLine += s
+              .replaceAll("\r\n", "\n")
+              .replaceAll("\r", "\n");
+          if (currentLine.endsWith("\n")) currentLine += " ";
+          String[] lines = currentLine.split("\n");
+          if (lines.length > 1) {
+            for (int i = 0; i < lines.length - 1; i++) {
+              print(lines[i], READER);
+            }
+            currentLine = lines[lines.length - 1];
           }
         }
       });
