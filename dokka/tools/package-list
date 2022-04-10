@@ -131,6 +131,11 @@ $dokka.location:me.scolastico.tools.etc/StackTraceRedirectionPrintStream/close/#
 $dokka.location:me.scolastico.tools.etc/StackTraceRedirectionPrintStream/flush/#/PointingToDeclaration/tools/me.scolastico.tools.etc/-stack-trace-redirection-print-stream/flush.html
 $dokka.location:me.scolastico.tools.etc/StackTraceRedirectionPrintStream/write/#byte[]#int#int/PointingToDeclaration/tools/me.scolastico.tools.etc/-stack-trace-redirection-print-stream/write.html
 $dokka.location:me.scolastico.tools.etc/StackTraceRedirectionPrintStream/write/#int/PointingToDeclaration/tools/me.scolastico.tools.etc/-stack-trace-redirection-print-stream/write.html
+$dokka.location:me.scolastico.tools.etc/StringEventOutputStream///PointingToDeclaration/tools/me.scolastico.tools.etc/-string-event-output-stream/index.html
+$dokka.location:me.scolastico.tools.etc/StringEventOutputStream/StringEventOutputStream/#java.util.function.Consumer<java.lang.String>/PointingToDeclaration/tools/me.scolastico.tools.etc/-string-event-output-stream/-string-event-output-stream.html
+$dokka.location:me.scolastico.tools.etc/StringEventOutputStream/write/#byte[]#int#int/PointingToDeclaration/tools/me.scolastico.tools.etc/-string-event-output-stream/write.html
+$dokka.location:me.scolastico.tools.etc/StringEventOutputStream/write/#byte[]/PointingToDeclaration/tools/me.scolastico.tools.etc/-string-event-output-stream/write.html
+$dokka.location:me.scolastico.tools.etc/StringEventOutputStream/write/#int/PointingToDeclaration/tools/me.scolastico.tools.etc/-string-event-output-stream/write.html
 $dokka.location:me.scolastico.tools.etc/StringSplitter.Companion///PointingToDeclaration/tools/me.scolastico.tools.etc/-string-splitter/-companion/index.html
 $dokka.location:me.scolastico.tools.etc/StringSplitter.Companion/splitStringByLength/#kotlin.String#kotlin.Int/PointingToDeclaration/tools/me.scolastico.tools.etc/-string-splitter/-companion/split-string-by-length.html
 $dokka.location:me.scolastico.tools.etc/StringSplitter///PointingToDeclaration/tools/me.scolastico.tools.etc/-string-splitter/index.html
