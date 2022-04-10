@@ -2,8 +2,6 @@ package me.scolastico.tools.console;
 
 import java.io.IOException;
 import java.io.InvalidClassException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,9 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,6 +19,7 @@ import me.scolastico.tools.console.commands.HeadCommand;
 import me.scolastico.tools.console.commands.HelpCommand;
 import me.scolastico.tools.console.commands.StatusCommand;
 import me.scolastico.tools.etc.StackTraceRedirectionPrintStream;
+import me.scolastico.tools.etc.StringEventOutputStream;
 import me.scolastico.tools.handler.ErrorHandler;
 import me.scolastico.tools.routine.Routine;
 import me.scolastico.tools.routine.RoutineManager;
@@ -104,23 +100,26 @@ public class ConsoleManager {
       }
 
       // Generate new System.out
-      PipedOutputStream outOut = new PipedOutputStream();
-      PipedInputStream outIn = new PipedInputStream(outOut, 65536);
-      PrintStream newOutOut = new PrintStream(outOut);
-      Scanner outScanner = new Scanner(outIn);
+      StringEventOutputStream newOut = new StringEventOutputStream(new Consumer<>() {
+        String currentLine = "";
+        @Override
+        public void accept(String s) {
+          currentLine += s;
+          if (currentLine.endsWith("\n") || currentLine.endsWith("\r") || currentLine.endsWith("\r\n")) {
+            print(currentLine, READER);
+            currentLine = "";
+          }
+        }
+      });
+
       PrintStream inStream = new StackTraceRedirectionPrintStream(
-          newOutOut,
+          new PrintStream(newOut, true),
           System.out,
           "org.jline.reader.LineReader"
       );
 
-      // Generate new System.err
-      PipedOutputStream errOut = new PipedOutputStream();
-      PipedInputStream errIn = new PipedInputStream(errOut, 65536);
-      PrintStream newErrOut = new PrintStream(errOut);
-      Scanner errScanner = new Scanner(errIn);
       PrintStream errStream = new StackTraceRedirectionPrintStream(
-          newErrOut,
+          new PrintStream(newOut, true),
           System.err,
           "org.jline.reader.LineReader"
       );
@@ -129,79 +128,11 @@ public class ConsoleManager {
       System.setOut(inStream);
       System.setErr(errStream);
 
-      // Read from PrintStreams
-      new Timer().scheduleAtFixedRate(new TimerTask() {
-        @Override
-        public void run() {
-          try {
-            while (outScanner.hasNextLine()) {
-              String nextLine = outScanner.nextLine();
-              print(nextLine, READER);
-            }
-            while (errScanner.hasNextLine()) {
-              String nextLine = errScanner.nextLine();
-              print(nextLine, READER);
-            }
-          } catch (Exception e) {
-            ErrorHandler.enableErrorLogFile();
-            ErrorHandler.handle(e);
-          }
-        }
-      }, 5, 5);
-
       new Thread(() -> {
         while (true) {
-          String command = "";
           try {
-            SYSTEM_REGISTRY.cleanUp();
-            command = READER.readLine(INPUT_PREFIX, null, (MaskingCallback) null, null);
-            if (
-                command.equalsIgnoreCase("HELP")
-                || command.toUpperCase().startsWith("HELP ")
-                || command.equalsIgnoreCase("EXIT")
-                || command.toUpperCase().startsWith("EXIT ")
-            ) {
-              COMMAND_LINE.execute(command.split(" "));
-            } else SYSTEM_REGISTRY.execute(command);
+            runCommand(READER.readLine(INPUT_PREFIX, null, (MaskingCallback) null, null));
           } catch (UserInterruptException ignored) {
-          } catch (UnmatchedArgumentException | IllegalArgumentException e) {
-            Object c = null;
-            for (Object o : COMMANDS) {
-              String cmd = command.split(" ")[0];
-              Command annotation = o.getClass().getAnnotation(Command.class);
-              if (annotation.name().equalsIgnoreCase(cmd)) {
-                c = o;
-                break;
-              }
-              for (String alias : annotation.aliases()) {
-                if (alias.equalsIgnoreCase(cmd)) {
-                  c = o;
-                  break;
-                }
-              }
-              if (c != null) break;
-            }
-            if (c == null) {
-              ErrorHandler.handle(
-                  new InvalidClassException(
-                      "An IllegalArgumentException could not find its help page for the command '" + command + "'."
-                  )
-              );
-            } else {
-              for (String line : HelpCommand.generateHelpPage(c)) print(line, READER);
-            }
-          } catch (UnknownCommandException e) {
-            print(Ansi.ansi()
-                .fgRed()
-                .a("Command '")
-                .fgBrightRed()
-                .a(command)
-                .fgRed()
-                .a("' not found.")
-                .reset()
-                .toString(),
-                READER
-            );
           } catch (EndOfFileException e) {
             System.exit(1);
             return;
@@ -216,15 +147,65 @@ public class ConsoleManager {
 
   public static void runCommand(String command) throws Exception {
     if (SYSTEM_REGISTRY != null) {
-      if (
-          command.equalsIgnoreCase("HELP")
-              || command.toUpperCase().startsWith("HELP ")
-              || command.equalsIgnoreCase("EXIT")
-              || command.toUpperCase().startsWith("EXIT ")
-      ) {
-        COMMAND_LINE.execute(command.split(" "));
-      }
-      SYSTEM_REGISTRY.execute(command);
+      new Thread(() -> {
+        try {
+          if (
+              command.equalsIgnoreCase("HELP")
+                  || command.toUpperCase().startsWith("HELP ")
+                  || command.equalsIgnoreCase("EXIT")
+                  || command.toUpperCase().startsWith("EXIT ")
+          ) {
+            COMMAND_LINE.clearExecutionResults();
+            COMMAND_LINE.execute(command.split(" "));
+          } else {
+            SYSTEM_REGISTRY.cleanUp();
+            SYSTEM_REGISTRY.execute(command);
+          }
+        } catch (UserInterruptException ignored) {
+        } catch (UnmatchedArgumentException | IllegalArgumentException e) {
+          Object c = null;
+          for (Object o : COMMANDS) {
+            String cmd = command.split(" ")[0];
+            Command annotation = o.getClass().getAnnotation(Command.class);
+            if (annotation.name().equalsIgnoreCase(cmd)) {
+              c = o;
+              break;
+            }
+            for (String alias : annotation.aliases()) {
+              if (alias.equalsIgnoreCase(cmd)) {
+                c = o;
+                break;
+              }
+            }
+            if (c != null) break;
+          }
+          if (c == null) {
+            ErrorHandler.handle(
+                new InvalidClassException(
+                    "Could not find the help page for the command '" + command + "'."
+                )
+            );
+          } else {
+            for (String line : HelpCommand.generateHelpPage(c)) print(line, READER);
+          }
+        } catch (UnknownCommandException e) {
+          print(Ansi.ansi()
+                  .fgRed()
+                  .a("Command '")
+                  .fgBrightRed()
+                  .a(command)
+                  .fgRed()
+                  .a("' not found.")
+                  .reset()
+                  .toString(),
+              READER
+          );
+        } catch (EndOfFileException e) {
+          System.exit(1);
+        } catch (Exception e) {
+          ErrorHandler.handleFatal(e);
+        }
+      }, "Command Executer").start();
     } else {
       throw new IllegalAccessException("Cant be accessed before ConsoleManager is enabled!");
     }
