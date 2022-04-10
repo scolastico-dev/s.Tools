@@ -163,3 +163,4 @@ tmp.json
 adminPanelSettings.json
 .cache
 keystore.jks
+admin-config.json
