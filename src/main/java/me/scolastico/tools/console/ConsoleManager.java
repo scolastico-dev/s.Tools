@@ -115,6 +115,7 @@ public class ConsoleManager {
             }
             currentLine = lines[lines.length - 1];
           }
+          if (currentLine.equals(" ")) currentLine = "";
         }
       });
 
