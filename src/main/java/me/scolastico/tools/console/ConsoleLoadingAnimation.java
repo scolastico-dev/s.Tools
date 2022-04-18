@@ -40,28 +40,25 @@ public class ConsoleLoadingAnimation {
       if (takeOverSystemOutputStream) System.setOut(new PrintStream(new ByteArrayOutputStream()));
       if (!AnsiConsole.isInstalled()) AnsiConsole.systemInstall();
       enabled = true;
-      thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          int currentSpeedStep = 0;
-          if (System.out != null) defaultStream.print(animation[0]);
-          while (enabled) {
-            try {
-              if (currentSpeedStep >= speed) {
-                currentSpeedStep = 0;
-                defaultStream.print((char) 8);
-                defaultStream.print(animation[step]);
-                step++;
-                if (step >= animation.length) step = 0;
-              }
-              Thread.sleep(10);
-              currentSpeedStep++;
-            } catch (InterruptedException e) {
-              e.printStackTrace();
+      thread = new Thread(() -> {
+        int currentSpeedStep = 0;
+        if (System.out != null) defaultStream.print(animation[0]);
+        while (enabled) {
+          try {
+            if (currentSpeedStep >= speed) {
+              currentSpeedStep = 0;
+              defaultStream.print((char) 8);
+              defaultStream.print(animation[step]);
+              step++;
+              if (step >= animation.length) step = 0;
             }
+            Thread.sleep(10);
+            currentSpeedStep++;
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
-      });
+      }, "ConsoleLoadingAnimation");
       thread.setDaemon(true);
       thread.start();
     }

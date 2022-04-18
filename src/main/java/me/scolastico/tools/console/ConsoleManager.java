@@ -147,7 +147,7 @@ public class ConsoleManager {
             ErrorHandler.handleFatal(e);
           }
         }
-      }).start();
+      }, "ConsoleManager Reader").start();
       ENABLED = true;
     }
   }
