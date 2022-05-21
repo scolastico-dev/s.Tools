@@ -104,7 +104,7 @@ dependencies {
     api("com.kosprov.jargon2:jargon2-api:1.1.1")
     api("com.kosprov.jargon2:jargon2-native-ri-backend:1.1.1")
     api("org.json:json:20220320")
-    api("io.ebean:ebean:13.2.0")
+    api("io.ebean:ebean:13.6.2")
     api("io.ebean:ebean-test:13.2.0")
     api("io.ebean:ebean-migration:13.0.0")
     api("com.fasterxml.jackson.core:jackson-core:2.13.2")
