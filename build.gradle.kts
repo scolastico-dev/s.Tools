@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("org.jetbrains.dokka") version "1.6.10"
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
 }
 
 group = "me.scolastico"
@@ -112,7 +112,7 @@ dependencies {
     api("org.mariadb.jdbc:mariadb-java-client:3.0.4")
     api("org.xerial:sqlite-jdbc:3.36.0.3")
     api("com.microsoft.sqlserver:mssql-jdbc:10.2.0.jre11")
-    api("org.postgresql:postgresql:42.3.3")
+    api("org.postgresql:postgresql:42.3.5")
     api("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
     api("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
     api("com.googlecode.lanterna:lanterna:3.1.1")
