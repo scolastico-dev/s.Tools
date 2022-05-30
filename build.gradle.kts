@@ -122,7 +122,7 @@ dependencies {
     api("commons-codec:commons-codec:1.15")
     api("io.ktor:ktor-server-core:1.6.8")
     api("io.ktor:ktor-server-netty:1.6.8")
-    api("io.ktor:ktor-websockets:1.6.8")
+    api("io.ktor:ktor-websockets:2.0.2")
     api("io.ktor:ktor-gson:1.6.8")
     api("io.ktor:ktor-network-tls-certificates:1.6.8")
     // disabled because of CVE-2022-23221 CVE-2021-42392 CVE-2021-23463
